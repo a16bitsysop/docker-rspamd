@@ -21,7 +21,7 @@ apk del .build-deps && \
 mkdir /etc/rspamd/override.d
 
 WORKDIR /usr/local/bin
-COPY entrypoint.sh ./
+COPY entrypoint.sh rspamd_pw.sh ./
 
 WORKDIR /etc/rspamd/local.d/maps.d
 COPY --chown=rspamd:rspamd maps/* ./

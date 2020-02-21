@@ -3,6 +3,9 @@ Dockerfile to run [rspamd](https://rspamd.com/) as a docker container, worker-pr
 
 It has two map files which can be edited in the web UI, filename for extensions to reject and whitelist for domains to whitelist.
 
+To generate a password hash for the web interface run container then exec rspamd_pw.sh inside it and copy output into /etc/override.d/worker-controller.inc and rspamadm reload
+This is then retained in the persistent volume if mounted.
+
 Environment Variables
 
 | NAME   | Description                                     | Default           |

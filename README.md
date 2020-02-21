@@ -6,6 +6,8 @@ It has two map files which can be edited in the web UI, filename for extensions 
 To generate a password hash for the web interface run container then exec rspamd_pw.sh inside it and copy output into /etc/override.d/worker-controller.inc and rspamadm reload.
 This is then retained in the persistent volume if mounted.
 
+It is configured to read the dkim/arc keys from redis, to manually add a key to redis instructions are on the Rspamd website [https://rspamd.com/doc/modules/dkim_signing.html#dkim-keys-in-redis](https://rspamd.com/doc/modules/dkim_signing.html#dkim-keys-in-redis).
+
 Environment Variables
 
 | NAME   | Description                                     | Default           |

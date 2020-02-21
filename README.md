@@ -8,6 +8,8 @@ This is then retained in the persistent volume if mounted.
 
 It is configured to read the dkim/arc keys from redis, to manually add a key to redis instructions are on the Rspamd website [https://rspamd.com/doc/modules/dkim_signing.html#dkim-keys-in-redis](https://rspamd.com/doc/modules/dkim_signing.html#dkim-keys-in-redis).
 
+To change the configuration add changes to the /etc/rspamd/override.d directory, and mount it with a volume.
+
 Environment Variables
 
 | NAME   | Description                                     | Default           |

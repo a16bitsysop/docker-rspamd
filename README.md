@@ -10,6 +10,9 @@ It is configured to read the dkim/arc keys from redis, to manually add a key to 
 
 To change the configuration add changes to the /etc/rspamd/override.d directory, and mount it with a volume.
 
+## Github
+Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)
+
 Environment Variables
 
 | NAME   | Description                                     | Default           |

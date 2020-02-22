@@ -77,6 +77,6 @@ fi
 
 if [ -n $CONTROLIP ]
 then
-echo "secure_ip: \"$CONTROLIP\";" >> worker-controller.inc
+echo "secure_ip = \"$CONTROLIP\";" >> worker-controller.inc
 fi
 /usr/bin/rspamd -f -u rspamd -g rspamd

@@ -7,6 +7,8 @@ echo '$OLEFY=' $OLEFY
 echo '$DCCIFD=' $DCCIFD
 echo '$CONTROLIP=' $CONTROLIP
 echo '$DNSSEC=' $DNSSEC
+echo '$NOGREY=' $NOGREY
+
 cd /etc/rspamd/local.d
 if [ -n "$REDIS" ]
 then
@@ -81,7 +83,10 @@ fi
 echo "dns {
   timeout = 4s;
   retransmits = 5;" > options.inc
-[ -n "$DNSSEC" ] && echo "  enable_dnssec = true;" >> options.inc 
+[ -n "$DNSSEC" ] && echo "  enable_dnssec = true;" >> options.inc
 echo "}" >> options.inc
 
+[ -n "$NOGREY" ] && echo "enabled = false;" > greylist.conf
+
 /usr/bin/rspamd -f -u rspamd -g rspamd
+

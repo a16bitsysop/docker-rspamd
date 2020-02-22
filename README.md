@@ -16,12 +16,13 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 
 ## Environment Variables
 
-| NAME   | Description                                     | Default           |
-| ------ | ----------------------------------------------- | ----------------- | 
-| REDIS  | name/container name or IP of the redis server.  | none (No redis)   |
-| OLEFY  | name/container name or IP of the Olefy server.  | do not use Olefy  |
-| DCCIFD | name/container name or IP of the DCCIFD server. | do not use dccifd |
-| CLAMAV | name/container name or IP of the ClamAV server. | do not use ClamAV |
+| NAME      | Description                                     | Default           |
+| --------- | ----------------------------------------------- | ----------------- | 
+| REDIS     | name/container name or IP of the redis server.  | none (No redis)   |
+| OLEFY     | name/container name or IP of the Olefy server.  | do not use Olefy  |
+| DCCIFD    | name/container name or IP of the DCCIFD server. | do not use dccifd |
+| CLAMAV    | name/container name or IP of the ClamAV server. | do not use ClamAV |
+| CONTROLIP | name/container name or IP of rspamc process.    | none              |
 
 ## Examples
 To run connecting to container network without exposing ports (accessible from host network), and docker managed volumes

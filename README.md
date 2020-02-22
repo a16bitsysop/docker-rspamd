@@ -13,6 +13,8 @@ To change the configuration add changes to the /etc/rspamd/override.d directory,
 
 Neural is configured for low email volume.
 
+The docker offical image for redis has an alpine variant as well which is redis:alpine
+
 ## Github
 Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)
 

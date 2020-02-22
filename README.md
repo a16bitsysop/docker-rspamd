@@ -13,7 +13,7 @@ To change the configuration add changes to the /etc/rspamd/override.d directory,
 ## Github
 Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)
 
-Environment Variables
+## Environment Variables
 
 | NAME   | Description                                     | Default           |
 | ------ | ----------------------------------------------- | ----------------- | 

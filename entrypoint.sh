@@ -89,4 +89,3 @@ echo "}" >> options.inc
 [ -n "$NOGREY" ] && echo "enabled = false;" > greylist.conf
 
 /usr/bin/rspamd -f -u rspamd -g rspamd
-

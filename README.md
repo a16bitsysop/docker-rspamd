@@ -23,6 +23,7 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 | DCCIFD    | name/container name or IP of the DCCIFD server. | do not use dccifd |
 | CLAMAV    | name/container name or IP of the ClamAV server. | do not use ClamAV |
 | CONTROLIP | name/container name or IP of rspamc process.    | none              |
+| DNSSEC    | enable dnssec for dns lookups.                  | no dnssec         |
 
 ## Examples
 To run connecting to container network without exposing ports (accessible from host network), and docker managed volumes

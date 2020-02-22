@@ -6,15 +6,16 @@ echo '$CLAMAV=' $CLAMAV
 echo '$OLEFY=' $OLEFY
 echo '$DCCIFD=' $DCCIFD
 echo '$CONTROLIP=' $CONTROLIP
+echo '$DNSSEC=' $DNSSEC
 cd /etc/rspamd/local.d
-if [ -n $REDIS ]
+if [ -n "$REDIS" ]
 then
 echo "write_servers = \"$REDIS\";
 read_servers  = \"$REDIS\";
 " > redis.conf
 fi
 
-if [ -n $CLAMAV ]
+if [ -n "$CLAMAV" ]
 then
 echo "clamav {
 log_clean = true;
@@ -31,7 +32,7 @@ fi
 
 echo "#local.d/external_services.conf" > external_services.conf
 
-if [ -n $DCCIFD ]
+if [ -n "$DCCIFD" ]
 then
 echo "dcc {
 servers = \"$DCCIFD:10045\";
@@ -39,7 +40,7 @@ servers = \"$DCCIFD:10045\";
 " >> external_services.conf
 fi
 
-if [ -n $OLEFY ]
+if [ -n "$OLEFY" ]
 then
 echo "oletools {
    type = \"oletools\";
@@ -75,8 +76,12 @@ echo "oletools {
 " >> external_services.conf
 fi
 
-if [ -n $CONTROLIP ]
-then
-echo "secure_ip = \"$CONTROLIP\";" >> worker-controller.inc
-fi
+[ -n "$CONTROLIP" ] && echo "secure_ip = \"$CONTROLIP\";" >> worker-controller.inc
+
+echo "dns {
+  timeout = 4s;
+  retransmits = 5;" > options.inc
+[ -n "$DNSSEC" ] && echo "  enable_dnssec = true;" >> options.inc 
+echo "}" >> options.inc
+
 /usr/bin/rspamd -f -u rspamd -g rspamd

@@ -31,5 +31,5 @@ COPY local.conf ./
 
 CMD [ "entrypoint.sh" ]
 
-VOLUME [ "/var/lib/rspamd" "/etc/rspamd/override.d" ]
+VOLUME [ "/var/lib/rspamd" "/etc/rspamd/override.d" "/etc/rspamd/local.d/maps.d" ]
 EXPOSE 11332 11334

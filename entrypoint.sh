@@ -1,6 +1,6 @@
 #!/bin/sh
 #display environment variables passed with --env
-echo "Starting rspamd at $(date +'%xx %X')"
+echo "Starting rspamd at $(date +'%x %X')"
 echo '$REDIS=' $REDIS
 echo '$CLAMAV=' $CLAMAV
 echo '$OLEFY=' $OLEFY

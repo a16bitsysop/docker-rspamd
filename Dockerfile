@@ -1,7 +1,7 @@
 FROM alpine:3.11
 LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
-ENV pkgver 2.3
+ENV pkgver 2.4
 WORKDIR /tmp
 RUN apk add --no-cache glib icu libmagic openssl lua5.1 pcre libsodium sqlite-libs
 RUN apk add --no-cache --virtual .build-deps \

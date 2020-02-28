@@ -81,7 +81,7 @@ fi
 [ -n "$CONTROLIP" ] && echo "secure_ip = \"$CONTROLIP\";" >> worker-controller.inc
 
 echo "dns {
-  timeout = 15s;
+  timeout = 5s;
   retransmits = 5;" > options.inc
 [ -n "$DNSSEC" ] && echo "  enable_dnssec = true;" >> options.inc
 echo "}" >> options.inc

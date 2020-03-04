@@ -10,6 +10,7 @@ RUN apk add --no-cache --virtual .build-deps \
 RUN addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd && \
 wget https://github.com/vstakhov/rspamd/archive/${pkgver}.tar.gz && \
 tar -xzf ${pkgver}.tar.gz && mkdir rspamd.build && cd rspamd.build && \
+wget -O ../rspamd-${pkgver}/src/plugins/lua/phishing.lua https://raw.githubusercontent.com/rspamd/rspamd/f294479f789d43eda71d330a81af8bb2fd147603/src/plugins/lua/phishing.lua && \
 cmake \
                 -DCMAKE_INSTALL_PREFIX=/usr \
                 -DCONFDIR=/etc/rspamd \

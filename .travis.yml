@@ -1,0 +1,21 @@
+os: linux
+dist: bionic
+language: minimal
+
+env:
+  - DOCKER_CLI_EXPERIMENTAL=enabled IMAGE_NAME=a16bitsysop/rspamd
+
+before_script:
+  - sudo apt-get install manpages-posix
+  - VER=$(docker container run --rm alpine:edge sh -c "apk update > /dev/null; apk list rspamd | cut -d'-' -f 2")
+  - TAG="-t $IMAGE_NAME:$VER"; fi
+  - MY_VER="$(./get_latest.sh $IMAGE_NAME)"
+  - if [ -n "$MY_VER" ] && [ "$MY_VER" = "$VER" ]; then travis_terminate 0; fi
+  - curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
+  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  - docker buildx create --use
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+
+script:
+  - for i in {1..15}; do sleep 1m; echo "waiting $i mins"; done
+  - docker buildx build --platform linux/amd64,linux/386,linux/ppc64le,linux/s390x,linux/arm64,linux/arm/v7 $TAG -t "$IMAGE_NAME" --push .

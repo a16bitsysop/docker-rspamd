@@ -10,15 +10,13 @@ echo '$DNSSEC=' $DNSSEC
 echo '$NOGREY=' $NOGREY
 
 cd /etc/rspamd/local.d
-if [ -n "$REDIS" ]
-then
+if [ -n "$REDIS" ]; then
 echo "write_servers = \"$REDIS\";
 read_servers  = \"$REDIS\";
 " > redis.conf
 fi
 
-if [ -n "$CLAMAV" ]
-then
+if [ -n "$CLAMAV" ]; then
 echo "clamav {
 log_clean = true;
 symbol = "CLAM_VIRUS";
@@ -34,16 +32,14 @@ fi
 
 echo "#local.d/external_services.conf" > external_services.conf
 
-if [ -n "$DCCIFD" ]
-then
+if [ -n "$DCCIFD" ]; then
 echo "dcc {
 servers = \"$DCCIFD:10045\";
 }
 " >> external_services.conf
 fi
 
-if [ -n "$OLEFY" ]
-then
+if [ -n "$OLEFY" ]; then
 echo "oletools {
    type = \"oletools\";
 #   scan_mime_parts = \"true\";
@@ -88,4 +84,5 @@ echo "}" >> options.inc
 
 [ -n "$NOGREY" ] && echo "enabled = false;" > greylist.conf
 
-/usr/bin/rspamd -f -u rspamd -g rspamd
+[ -f /usr/sbin/rspamd ] && s="s"
+/usr/"$s"bin/rspamd -f -u rspamd -g rspamd

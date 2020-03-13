@@ -1,0 +1,38 @@
+FROM alpine:3.11
+LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
+
+ENV pkgver 2.4
+WORKDIR /tmp
+RUN apk add --no-cache glib icu libmagic openssl luajit pcre libsodium sqlite-libs
+RUN apk add --no-cache --virtual .build-deps \
+	build-base perl cmake ragel binutils \
+	glib-dev icu-dev openssl-dev luajit-dev  pcre-dev libsodium-dev sqlite-dev
+RUN addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd && \
+wget https://github.com/vstakhov/rspamd/archive/${pkgver}.tar.gz && \
+tar -xzf ${pkgver}.tar.gz && mkdir rspamd.build && cd rspamd.build && \
+wget -O ../rspamd-${pkgver}/src/plugins/lua/phishing.lua https://raw.githubusercontent.com/rspamd/rspamd/f294479f789d43eda71d330a81af8bb2fd147603/src/plugins/lua/phishing.lua && \
+cmake \
+                -DCMAKE_INSTALL_PREFIX=/usr \
+                -DCONFDIR=/etc/rspamd \
+                -DRUNDIR=/run/rspamd \
+                ../rspamd-${pkgver} && \
+make && make install && \
+cd /usr/bin && \
+for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done && \
+cd /tmp && rm -Rf * rspamd.build && \
+apk del .build-deps && \
+mkdir /etc/rspamd/override.d
+
+WORKDIR /usr/local/bin
+COPY entrypoint.sh ./
+
+WORKDIR /etc/rspamd/local.d/maps.d
+COPY --chown=rspamd:rspamd maps/* ./
+
+WORKDIR /etc/rspamd/local.d
+COPY local.conf ./
+
+CMD [ "entrypoint.sh" ]
+
+VOLUME [ "/var/lib/rspamd" "/etc/rspamd/override.d" "/etc/rspamd/local.d/maps.d" ]
+EXPOSE 11332 11334

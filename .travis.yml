@@ -8,7 +8,7 @@ env:
 before_script:
   - sudo apt-get install manpages-posix
   - VER=$(docker container run --rm alpine:edge sh -c "apk update > /dev/null; apk list rspamd | cut -d'-' -f 2")
-  - TAG="-t $IMAGE_NAME:$VER"; fi
+  - TAG="-t $IMAGE_NAME:$VER"
   - MY_VER="$(./get_latest.sh $IMAGE_NAME)"
   - if [ -n "$MY_VER" ] && [ "$MY_VER" = "$VER" ]; then travis_terminate 0; fi
   - curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh

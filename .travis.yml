@@ -10,7 +10,8 @@ before_script:
   - VER=$(docker container run --rm alpine:edge sh -c "apk update > /dev/null; apk list "$APK" | cut -d'-' -f 2")
   - TAG="-t $IMAGE_NAME:$VER"
   - |
-      MY_VER="$(wget -q https://registry.hub.docker.com/v1/repositories/$IMAGE_NAME/tags -O -  | sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' | tr '}' '\n'  | awk -F: '{print $3}' | tail -n1)"
+      MY_VER2="$(wget -q https://registry.hub.docker.com/v1/repositories/$IMAGE_NAME/tags -O -  | sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' | tr '}' '\n'  | awk -F: '{print $3}' | sort -V | tail -n2)"
+      for i in $MY_VER2; do [ "$i" != "latest" ] && MY_VER="$i"; done
       echo "Alpine Version $VER"
       echo "Docker Version $MY_VER"
       if [ -n "$MY_VER" ] && [ "$MY_VER" = "$VER" ]; then travis_terminate 0; fi

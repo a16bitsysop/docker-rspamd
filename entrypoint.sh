@@ -81,6 +81,7 @@ echo "dns {
   retransmits = 5;" > options.inc
 [ -n "$DNSSEC" ] && echo "  enable_dnssec = true;" >> options.inc
 echo "}" >> options.inc
+echo 'control_socket = "$DBDIR/rspamd.sock mode=0600";' >> options.inc
 
 [ -n "$NOGREY" ] && echo "enabled = false;" > greylist.conf
 

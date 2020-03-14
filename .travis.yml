@@ -3,11 +3,11 @@ dist: bionic
 language: minimal
 
 env:
-  - DOCKER_CLI_EXPERIMENTAL=enabled IMAGE_NAME=a16bitsysop/rspamd
+  - DOCKER_CLI_EXPERIMENTAL=enabled IMAGE_NAME=a16bitsysop/rspamd APK=rspamd
 
 before_script:
   - sudo apt-get install manpages-posix
-  - VER=$(docker container run --rm alpine:edge sh -c "apk update > /dev/null; apk list rspamd | cut -d'-' -f 2")
+  - VER=$(docker container run --rm alpine:edge sh -c "apk update > /dev/null; apk list "$APK" | cut -d'-' -f 2")
   - TAG="-t $IMAGE_NAME:$VER"
   - |
       MY_VER="$(wget -q https://registry.hub.docker.com/v1/repositories/$IMAGE_NAME/tags -O -  | sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' | tr '}' '\n'  | awk -F: '{print $3}' | tail -n1)"

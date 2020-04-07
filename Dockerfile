@@ -10,6 +10,9 @@ COPY entrypoint.sh ./
 WORKDIR /etc/rspamd/local.d/maps.d
 COPY --chown=rspamd:rspamd maps/* ./
 
+WORKDIR /etc/rspamd/local.d/maps.orig
+COPY --chown=rspamd:rspamd maps/* ./
+
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./
 

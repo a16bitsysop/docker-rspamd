@@ -10,6 +10,8 @@ echo '$DNSSEC=' $DNSSEC
 echo '$NOGREY=' $NOGREY
 
 cd /etc/rspamd/local.d
+chown rspamd:rspamd maps.d
+
 if [ -n "$REDIS" ]; then
 echo "write_servers = \"$REDIS\";
 read_servers  = \"$REDIS\";

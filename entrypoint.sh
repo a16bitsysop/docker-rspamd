@@ -12,80 +12,33 @@ echo '$NOGREY=' $NOGREY
 cd /etc/rspamd/local.d
 chown rspamd:rspamd maps.d
 
+rm -f {redis,antivirus,external_services}.conf
+
 if [ -n "$REDIS" ]; then
-echo "write_servers = \"$REDIS\";
-read_servers  = \"$REDIS\";
-" > redis.conf
+cp ../local.orig/redis.conf ./
+sed -r "s+(^(read|write)_servers).*+\1 = \"$REDIS\";+g" -i redis.conf
 fi
 
 if [ -n "$CLAMAV" ]; then
-echo "clamav {
-log_clean = true;
-symbol = "CLAM_VIRUS";
-type = "clamav";
-servers = \"$CLAMAV:3310\";
-patterns {
-    # symbol_name = "pattern";
-    JUST_EICAR = '^Eicar-Test-Signature$';
-  }
-}
-" > antivirus.conf
+cp ../local.orig/antivirus.conf ./
+sed -r "s+(^servers).*+\1 = \"$CLAMAV:3310\";+g" -i antivirus.conf
 fi
 
-echo "#local.d/external_services.conf" > external_services.conf
-
 if [ -n "$DCCIFD" ]; then
-echo "dcc {
-servers = \"$DCCIFD:10045\";
-}
-" >> external_services.conf
+echo -e "dcc {\nservers = \"$DCCIFD:10045\";\n}" >> external_services.conf
 fi
 
 if [ -n "$OLEFY" ]; then
-echo "oletools {
-   type = \"oletools\";
-#   scan_mime_parts = \"true\";
-  # default olefy settings
-  servers = \"$OLEFY:10050\"
-  # mime-part regex matching in content-type or filename
-  mime_parts_filter_regex {
-    #UNKNOWN = \"application\\/octet-stream\";
-    DOC2 = \"application\\/msword\";
-    DOC3 = \"application\\/vnd\.ms-word.*\";
-    XLS = \"application\\/vnd\.ms-excel.*\";
-    PPT = \"application\\/vnd\.ms-powerpoint.*\";
-    GENERIC = \"application\\/vnd\.openxmlformats-officedocument.*\"
-}
-  # mime-part filename extension matching (no regex)
-  mime_parts_filter_ext {
-    doc = \"doc\";
-    dot = \"dot\";
-    docx = \"docx\";
-    dotx = \"dotx\";
-    docm = \"docm\";
-    dotm = \"dotm\";
-    xls = \"xls\";
-    xlt = \"xlt\";
-    xla = \"xla\";
-    xlsx = \"xlsx\";
-    xltx = \"xltx\";
-    xlsm = \"xlsm\";
-    xltm = \"xltm\";
-  }
-}
-" >> external_services.conf
+echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\"\n}" >> external_services.conf
 fi
 
-[ -n "$CONTROLIP" ] && echo "secure_ip = \"$CONTROLIP\";" >> worker-controller.inc
+[ -n "$CONTROLIP" ] && echo -e "bind_socket = \"*:11334\";\nsecure_ip = \"$CONTROLIP\";" > worker-controller.inc
 
-echo "dns {
-  timeout = 5s;
-  retransmits = 5;" > options.inc
-[ -n "$DNSSEC" ] && echo "  enable_dnssec = true;" >> options.inc
-echo "}" >> options.inc
-echo 'control_socket = "$DBDIR/rspamd.sock mode=0600";' >> options.inc
+[ -n "$DNSSEC" ] && SUB=true || SUB=false
+sed -r "s+(.*enable_dnssec).*+\1 = $SUB;+g" -i options.inc
 
-[ -n "$NOGREY" ] && echo "enabled = false;" > greylist.conf
+[ -n "$NOGREY" ] && SUB="true" || SUB="false"
+echo "enabled = $SUB;" > greylist.conf
 
 [ -f /usr/sbin/rspamd ] && s="s"
 /usr/"$s"bin/rspamd -f -u rspamd -g rspamd

@@ -4,6 +4,7 @@ echo "Starting rspamd at $(date +'%x %X')"
 echo '$REDIS=' $REDIS
 echo '$CLAMAV=' $CLAMAV
 echo '$OLEFY=' $OLEFY
+echo '$RAZORFY=' $RAZORFY
 echo '$DCCIFD=' $DCCIFD
 echo '$CONTROLIP=' $CONTROLIP
 echo '$DNSSEC=' $DNSSEC
@@ -30,6 +31,10 @@ fi
 
 if [ -n "$OLEFY" ]; then
 echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\"\n}" >> external_services.conf
+fi
+
+if [ -n "$RAZORFY" ]; then
+echo -e "razor {\nservers = \"$RAZORFY:11342\";\n}" >> external_services.conf
 fi
 
 [ -n "$CONTROLIP" ] && echo -e "bind_socket = \"*:11334\";\nsecure_ip = \"$CONTROLIP\";" > worker-controller.inc

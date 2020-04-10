@@ -37,7 +37,7 @@ fi
 [ -n "$DNSSEC" ] && SUB=true || SUB=false
 sed -r "s+(.*enable_dnssec).*+\1 = $SUB;+g" -i options.inc
 
-[ -n "$NOGREY" ] && SUB="true" || SUB="false"
+[ -n "$NOGREY" ] && SUB="false" || SUB="true"
 echo "enabled = $SUB;" > greylist.conf
 
 [ -f /usr/sbin/rspamd ] && s="s"

@@ -6,12 +6,11 @@ env:
   - DOCKER_CLI_EXPERIMENTAL=enabled IMAGE_NAME=a16bitsysop/rspamd APK=rspamd
 
 before_script:
-  - sudo apt-get install manpages-posix
   - VER=$(docker container run --rm alpine:edge sh -c "apk update > /dev/null; apk info -s "$APK" | head -n1 | sed -r 's+$APK-(.*) install.*+\1+g';")
   - VER="$VER"-alpine"$(docker container run --rm alpine cat /etc/alpine-release)"
   - TAG="-t $IMAGE_NAME:$VER"
   - |
-      MY_VER2="$(wget -q https://registry.hub.docker.com/v1/repositories/$IMAGE_NAME/tags -O -  | sed -e 's/[][]//g' -e 's/"//g' -e 's/ //g' | tr '}' '\n'  | awk -F: '{print $3}' | sort -V | tail -n2)"
+      MY_VER="$(wget -q https://registry.hub.docker.com/v1/repositories/$IMAGE_NAME/tags -O - | sed -e 's+.*\"name\": \"++g' -e 's+\"}]++')"
       for i in $MY_VER2; do [ "$i" != "latest" ] && MY_VER="$i"; done
       echo "Alpine Version $VER"
       echo "Docker Version $MY_VER"

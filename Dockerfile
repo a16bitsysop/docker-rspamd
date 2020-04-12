@@ -22,5 +22,5 @@ COPY --chown=rspamd:rspamd maps/* ./
 
 CMD [ "entrypoint.sh" ]
 
-VOLUME [ "/var/lib/rspamd" "/etc/rspamd/override.d" "/etc/rspamd/local.d/maps.d" ]
+VOLUME "/var/lib/rspamd" "/etc/rspamd/override.d" "/etc/rspamd/local.d/maps.d"
 EXPOSE 11332 11334

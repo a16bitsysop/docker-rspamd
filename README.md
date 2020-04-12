@@ -1,6 +1,10 @@
 # docker-rspamd
 Dockerfile to run [rspamd](https://rspamd.com/) as a docker container, worker-proxy is used instead of worker-normal as it spawns a new worker if there is a crash while processing.
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/a16bitsysop/rspamd.svg?style=flat-square)](https://hub.docker.com/r/a16bitsysop/rspamd/)
+[![Docker Stars](https://img.shields.io/docker/stars/a16bitsysop/rspamd.svg?style=flat-square)](https://hub.docker.com/r/a16bitsysop/rspamd/)
+[![](https://images.microbadger.com/badges/version/a16bitsysop/rspamd.svg)](https://microbadger.com/images/a16bitsysop/rspamd "Get your own version badge on microbadger.com")
+
 It has two map files which can be edited in the web UI, filename for extensions to reject and whitelist for domains to whitelist.
 
 To generate a password hash for the web interface run container then run rspamd_pw.sh and copy output into /etc/rspamd/override.d/worker-controller.inc.  Or exec rspamadm pw inside container and use result for password and enable_password.
@@ -23,7 +27,7 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 | NAME      | Description                                      | Default            |
 | --------- | ------------------------------------------------ | ------------------ | 
 | REDIS     | name/container name or IP of the redis server.   | none (No redis)    |
-| OLEFY     | name/container name or IP of the Olefy server.   | do not use Olefy   |
+| rspamd     | name/container name or IP of the rspamd server.   | do not use rspamd   |
 | RAZORFY   | name/container name or IP of the Razorfy server. | do not use Razorfy |
 | DCCIFD    | name/container name or IP of the DCCIFD server.  | do not use dccifd  |
 | CLAMAV    | name/container name or IP of the ClamAV server.  | do not use ClamAV  |

@@ -23,4 +23,5 @@ before_script:
 script:
   - if [ -z "$NOW" ]; then for i in {1..15}; do sleep 1m; echo "waiting $i mins"; done; fi
   - docker buildx build --platform linux/amd64,linux/386,linux/ppc64le,linux/s390x,linux/arm64,linux/arm/v7 $TAG -t "$IMAGE_NAME" --push .
+  - docker logout
   - curl -X POST "https://hooks.microbadger.com/images/$IMAGE_NAME/$WEBHOOK"

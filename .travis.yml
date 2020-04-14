@@ -1,6 +1,4 @@
-os: linux
-dist: bionic
-language: minimal
+import: a16bitsysop/travis-build-configs:docker-apt.yml
 
 env:
   - DOCKER_CLI_EXPERIMENTAL=enabled IMAGE_NAME=a16bitsysop/rspamd APK=rspamd
@@ -15,7 +13,6 @@ before_script:
       echo "Alpine Version $VER"
       echo "Docker Version $MY_VER"
       if [ -z $NOW ] && [ -n "$MY_VER" ] && [ "$MY_VER" = "$VER" ]; then travis_terminate 0; fi
-  - curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
   - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   - docker buildx create --use
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin

@@ -10,6 +10,7 @@ echo '$CONTROLIP=' $CONTROLIP
 echo '$DNSSEC=' $DNSSEC
 echo '$NOGREY=' $NOGREY
 
+chown rspamd:rspamd /var/lib/rspamd
 cd /etc/rspamd/local.d
 chown rspamd:rspamd maps.d
 

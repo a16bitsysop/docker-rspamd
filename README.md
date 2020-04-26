@@ -27,7 +27,7 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 | NAME      | Description                                      | Default            |
 | --------- | ------------------------------------------------ | ------------------ | 
 | REDIS     | name/container name or IP of the redis server.   | none (No redis)    |
-| rspamd     | name/container name or IP of the rspamd server.   | do not use rspamd   |
+| OLEFY     | name/container name or IP of the Olefy server.   | do not use Olefy   |
 | RAZORFY   | name/container name or IP of the Razorfy server. | do not use Razorfy |
 | DCCIFD    | name/container name or IP of the DCCIFD server.  | do not use dccifd  |
 | CLAMAV    | name/container name or IP of the ClamAV server.  | do not use ClamAV  |

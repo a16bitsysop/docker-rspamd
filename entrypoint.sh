@@ -18,9 +18,10 @@ echo "Checking for new map files"
 cd maps.orig
 MAPS=$(find -name '*.map');
 cd ..
+
 for m in $MAPS;
 do
-  echo "Checking for: $m";
+  echo "Checking $m";
   if [ ! -f maps.d/"$m" ]
   then
     echo "Copying $m into maps.d"
@@ -32,26 +33,31 @@ done
 
 rm -f {redis,antivirus,external_services}.conf
 
-if [ -n "$REDIS" ]; then
-cp ../local.orig/redis.conf ./
-sed -r "s+(^(read|write)_servers).*+\1 = \"$REDIS\";+g" -i redis.conf
+if [ -n "$REDIS" ]
+then
+  cp ../local.orig/redis.conf ./
+  sed -r "s+(^(read|write)_servers).*+\1 = \"$REDIS\";+g" -i redis.conf
 fi
 
-if [ -n "$CLAMAV" ]; then
-cp ../local.orig/antivirus.conf ./
-sed -r "s+(^servers).*+\1 = \"$CLAMAV:3310\";+g" -i antivirus.conf
+if [ -n "$CLAMAV" ]
+then
+  cp ../local.orig/antivirus.conf ./
+  sed -r "s+(^servers).*+\1 = \"$CLAMAV:3310\";+g" -i antivirus.conf
 fi
 
-if [ -n "$DCCIFD" ]; then
-echo -e "dcc {\nservers = \"$DCCIFD:10045\";\n}" >> external_services.conf
+if [ -n "$DCCIFD" ]
+then
+  echo -e "dcc {\nservers = \"$DCCIFD:10045\";\n}" >> external_services.conf
 fi
 
-if [ -n "$OLEFY" ]; then
-echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\"\n}" >> external_services.conf
+if [ -n "$OLEFY" ]
+then
+  echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\"\n}" >> external_services.conf
 fi
 
-if [ -n "$RAZORFY" ]; then
-echo -e "razor {\nservers = \"$RAZORFY:11342\";\n}" >> external_services.conf
+if [ -n "$RAZORFY" ]
+then
+  echo -e "razor {\nservers = \"$RAZORFY:11342\";\n}" >> external_services.conf
 fi
 
 echo -e "bind_socket = \"*:11334\";" > worker-controller.inc
@@ -64,4 +70,5 @@ sed -r "s+(.*enable_dnssec).*+\1 = $SUB;+g" -i options.inc
 echo "enabled = $SUB;" > greylist.conf
 
 [ -f /usr/sbin/rspamd ] && s="s"
+
 /usr/"$s"bin/rspamd -f -u rspamd -g rspamd

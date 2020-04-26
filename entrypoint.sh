@@ -16,12 +16,12 @@ chown rspamd:rspamd maps.d
 
 echo "Checking for new map files"
 cd maps.orig
-MAPS=$(find -name '*.map');
+MAPS=$(find -name '*.map')
 cd ..
 
 for m in $MAPS;
 do
-  echo "Checking $m";
+  echo "Checking $m"
   if [ ! -f maps.d/"$m" ]
   then
     echo "Copying $m into maps.d"

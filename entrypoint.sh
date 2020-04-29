@@ -1,6 +1,5 @@
 #!/bin/sh
 #display environment variables passed with --env
-echo "Starting rspamd at $(date +'%x %X')"
 echo '$REDIS=' $REDIS
 echo '$CLAMAV=' $CLAMAV
 echo '$OLEFY=' $OLEFY
@@ -9,7 +8,24 @@ echo '$DCCIFD=' $DCCIFD
 echo '$CONTROLIP=' $CONTROLIP
 echo '$DNSSEC=' $DNSSEC
 echo '$NOGREY=' $NOGREY
+echo '$TIMEZONE=' $TIMEZONE
+echo
 
+if [ -n "$TIMEZONE" ]
+then
+  apk add --no-cache tzdata
+  if [ -f /usr/share/zoneinfo/"$TIMEZONE" ]
+  then
+    echo "Setting timezone to $TIMEZONE"
+    cp /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime
+    echo "$TIMEZONE" > /etc/timezone
+  else
+    echo "$TIMEZONE does not exist"
+  fi
+  apk del tzdata
+fi
+
+echo "Starting rspamd at $(date +'%x %X')"
 chown rspamd:rspamd /var/lib/rspamd
 cd /etc/rspamd/local.d
 chown rspamd:rspamd maps.d

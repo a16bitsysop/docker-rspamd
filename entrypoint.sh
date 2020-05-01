@@ -11,6 +11,20 @@ echo '$NOGREY=' $NOGREY
 echo '$TIMEZONE=' $TIMEZONE
 echo
 
+wait_port() {
+  TL=0
+  [ -n "$4" ] && INC="$4" || INC="3"
+  echo "Waiting for $1"
+  while :
+  do
+    nc -zv "$2" "$3" && return
+    echo "."
+    TL=`expr "$TL" + "$INC"`
+    [ "$TL" -gt 90 ] && return 1
+    sleep "$INC"
+  done
+}
+
 if [ -n "$TIMEZONE" ]
 then
   echo "Waiting for DNS"
@@ -61,21 +75,25 @@ if [ -n "$CLAMAV" ]
 then
   cp ../local.orig/antivirus.conf ./
   sed -r "s+(^servers).*+\1 = \"$CLAMAV:3310\";+g" -i antivirus.conf
+  wait_port "clamav" "$CLAMAV" 3310 10
 fi
 
 if [ -n "$DCCIFD" ]
 then
   echo -e "dcc {\nservers = \"$DCCIFD:10045\";\n}" >> external_services.conf
+  wait_port "dccifd" "$DCCIFD" 10045
 fi
 
 if [ -n "$OLEFY" ]
 then
   echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\"\n}" >> external_services.conf
+  wait_port "olefy" "$OLEFY" 10050
 fi
 
 if [ -n "$RAZORFY" ]
 then
   echo -e "razor {\nservers = \"$RAZORFY:11342\";\n}" >> external_services.conf
+  wait_port "razorfy" "$RAZORFY" 11342
 fi
 
 echo -e "bind_socket = \"*:11334\";" > worker-controller.inc

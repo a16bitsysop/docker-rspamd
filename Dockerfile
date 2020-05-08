@@ -2,7 +2,8 @@ FROM alpine:3.11
 LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
-&& apk add --no-cache rspamd rspamd-fuzzy rspamd-controller rspamd-proxy
+&& apk add --no-cache rspamd rspamd-fuzzy rspamd-controller rspamd-proxy \
+&& mkdir /run/rspamd
 
 WORKDIR /usr/local/bin
 COPY entrypoint.sh ./

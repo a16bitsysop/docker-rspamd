@@ -3,24 +3,28 @@ LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
 ENV pkgver 2.5
 WORKDIR /tmp
+COPY 10-control_socket.patch .
+
 RUN apk add --no-cache glib icu libmagic openssl luajit pcre libsodium sqlite-libs
 RUN apk add --no-cache --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev luajit-dev  pcre-dev libsodium-dev sqlite-dev
-RUN addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd && \
-wget https://github.com/vstakhov/rspamd/archive/${pkgver}.tar.gz && \
-tar -xzf ${pkgver}.tar.gz && mkdir rspamd.build && cd rspamd.build && \
+RUN addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
+&& wget https://github.com/vstakhov/rspamd/archive/${pkgver}.tar.gz \
+&& tar -xzf ${pkgver}.tar.gz && mkdir rspamd.build \
+&& cd rspamd-${pkgver} && patch -p1 -i ../10-control_socket.patch \
+&& cd ../rspamd.build && \
 cmake \
                 -DCMAKE_INSTALL_PREFIX=/usr \
                 -DCONFDIR=/etc/rspamd \
                 -DRUNDIR=/run/rspamd \
-                ../rspamd-${pkgver} && \
-make && make install && \
-cd /usr/bin && \
-for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done && \
-cd /tmp && rm -Rf * rspamd.build && \
-apk del .build-deps && \
-mkdir /etc/rspamd/override.d
+                ../rspamd-${pkgver} \
+&& make && make install \
+&& cd /usr/bin \
+&& for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
+&& cd /tmp && rm -Rf * rspamd.build \
+&& apk del .build-deps \
+&& mkdir /etc/rspamd/override.d
 
 WORKDIR /usr/local/bin
 COPY entrypoint.sh ./

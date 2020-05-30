@@ -1,41 +1,79 @@
+FROM alpine:3.11 AS jem-build
+ENV pkgver 5.2.1
+
+RUN apk --no-cache add build-base autoconf
+WORKDIR /tmp
+RUN wget https://github.com/jemalloc/jemalloc/archive/${pkgver}.tar.gz \
+&& tar -xzf ${pkgver}.tar.gz \
+&& cd jemalloc-* \
+&& autoconf \
+&& _pgs=16 \
+&& if [ "$TARGETARCH" = "amd64" ]; then _pgs=12; fi \
+&& if [ "$TARGETARCH" = "x86" ] ; then _pgs=12; fi \
+&& if [ "$TARGETARCH" = "ppc64le" ] ; then export CPPFLAGS="-maltivec -mabi=altivec"; fi \
+&& echo "building with --with-lg-page=${_pgs}" \
+&& echo "${pkgver}" > VERSION \
+&& ./configure \
+	--enable-xmalloc \
+	--prefix=/usr \
+	--localstatedir=/var \
+	--sysconfdir=/etc \
+	--with-lg-page=${_pgs} \
+	--with-lg-hugepage=21 \
+&&	make build_lib && make install_include install_lib
+
 FROM alpine:3.11
 LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
 ENV pkgver 2.5
 WORKDIR /tmp
-COPY 10-control_socket.patch .
 
-RUN apk add --no-cache glib icu libmagic openssl luajit pcre libsodium sqlite-libs
+RUN apk add --no-cache glib icu libmagic openssl luajit pcre2 libsodium sqlite-libs
 RUN apk add --no-cache --virtual .build-deps \
 	build-base perl cmake ragel binutils \
-	glib-dev icu-dev openssl-dev luajit-dev  pcre-dev libsodium-dev sqlite-dev
-RUN addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
-&& wget https://github.com/vstakhov/rspamd/archive/${pkgver}.tar.gz \
-&& tar -xzf ${pkgver}.tar.gz && mkdir rspamd.build \
-&& cd rspamd-${pkgver} && patch -p1 -i ../10-control_socket.patch \
-&& cd ../rspamd.build && \
-cmake \
+	glib-dev icu-dev openssl-dev luajit-dev  pcre2-dev libsodium-dev sqlite-dev \
+&& addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
+&& wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
+&& tar -xzf ${pkgver}.tar.gz \
+&& cd rspamd-${pkgver} 
+
+WORKDIR /tmp/rspamd-${pkgver}
+COPY 10-control_socket.patch .
+
+COPY --from=jem-build /usr/lib/libjemalloc_pic.a /usr/lib/
+COPY --from=jem-build /usr/include/jemalloc/jemalloc.h /usr/include/jemalloc/
+
+RUN patch -p1 -i 10-control_socket.patch \
+&& cmake -B build \
                 -DCMAKE_INSTALL_PREFIX=/usr \
                 -DCONFDIR=/etc/rspamd \
                 -DRUNDIR=/run/rspamd \
-                ../rspamd-${pkgver} \
-&& make && make install \
+		-DENABLE_PCRE2=ON \
+		-DENABLE_JEMALLOC=ON \
+&& make -C build && make -C build install \
 && cd /usr/bin \
 && for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
-&& cd /tmp && rm -Rf * rspamd.build \
+&& cd /tmp && rm -Rf * \
 && apk del .build-deps \
-&& mkdir /etc/rspamd/override.d
+&& mkdir /etc/rspamd/override.d \
+&& rm /usr/lib/libjemalloc_pic.a && rm -Rf /usr/include/jemalloc
+
 
 WORKDIR /usr/local/bin
 COPY entrypoint.sh ./
 
-WORKDIR /etc/rspamd/local.d/maps.d
-COPY --chown=rspamd:rspamd maps/* ./
+WORKDIR /etc/rspamd/local.orig
+COPY local.orig ./
 
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./
 
-CMD [ "entrypoint.sh" ]
+WORKDIR /etc/rspamd/local.d/maps.d
+COPY --chown=rspamd:rspamd maps/* ./
 
-VOLUME "/var/lib/rspamd" "/etc/rspamd/override.d" "/etc/rspamd/local.d/maps.d"
+WORKDIR /etc/rspamd/local.d/maps.orig
+COPY --chown=rspamd:rspamd maps/* ./
+
+CMD [ "entrypoint.sh" ]
+VOLUME /var/lib/rspamd /etc/rspamd/override.d /etc/rspamd/local.d/maps.d
 EXPOSE 11332 11334

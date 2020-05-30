@@ -1,7 +1,7 @@
 import: a16bitsysop/travis-build-configs:docker-apt.yml
 
 env:
-  - DOCKER_CLI_EXPERIMENTAL=enabled IMAGE_NAME=a16bitsysop/rspamd APK=rspamd
+  - IMAGE_NAME=a16bitsysop/rspamd APK=rspamd
 
 before_script:
   - VER=$(docker container run --rm alpine:edge sh -c "apk update > /dev/null; apk info -s "$APK" | head -n1 | sed -r 's+$APK-(.*) install.*+\1+g';")
@@ -12,10 +12,7 @@ before_script:
       for i in $MY_VER2; do [ "$i" != "latest" ] && MY_VER="$i"; done
       echo "Alpine Version $VER"
       echo "Docker Version $MY_VER"
-      if [ -z $NOW ] && [ -n "$MY_VER" ] && [ "$MY_VER" = "$VER" ]; then travis_terminate 0; fi
-  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-  - docker buildx create --use
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      if [ -z $NOW ] && [ -n "$MY_VER" ] && [ "$MY_VER" = "$VER" ]; then docker logout && travis_terminate 0; fi
 
 script:
   - if [ -z "$NOW" ] || [ "$NOW" = "later" ]; then for i in {1..15}; do sleep 1m; echo "waiting $i mins"; done; fi

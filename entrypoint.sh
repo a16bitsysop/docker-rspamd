@@ -105,6 +105,26 @@ sed -r "s+(.*enable_dnssec).*+\1 = $SUB;+g" -i options.inc
 [ -n "$NOGREY" ] && SUB="false" || SUB="true"
 echo "enabled = $SUB;" > greylist.conf
 
+if [ -f /etc/rspamd/rspamd-dqs/dqs-key ]
+then
+  echo "Setting up spamhaus DQS"
+  cd /etc/rspamd/local.d
+  rm -f {rbl,rbl_group,sh_rbl_group_hbl,sh_rbl_hbl}.conf
+  rm -f rspamd.local.lua
+  cd /etc/rspamd/rspamd-dqs
+  HBL=$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw.$(cat /etc/rspamd/rspamd-dqs/dqs-key).hbl.dq.spamhaus.net | grep -c "127.0.3.20")
+  if [ "$HBL" -eq 0 ]
+  then
+    echo "Your key is not HBL enabled"
+    cp rbl.conf rbl_group.conf /etc/rspamd/local.d
+  else
+    echo "Your key is HBL enabled"
+    cp *.conf rspamd.local.lua /etc/rspamd/local.d
+  fi
+  cd /etc/rspamd/local.d
+  sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" *.conf rspamd.local.lua
+fi
+
 [ -f /usr/sbin/rspamd ] && s="s"
 
 /usr/"$s"bin/rspamd -f -u rspamd -g rspamd

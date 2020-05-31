@@ -1,4 +1,4 @@
-FROM alpine:3.11 AS jem-build
+FROM alpine:3.12 AS jem-build
 ENV pkgver 5.2.1
 
 RUN apk --no-cache add build-base autoconf
@@ -22,7 +22,7 @@ RUN wget https://github.com/jemalloc/jemalloc/archive/${pkgver}.tar.gz \
 	--with-lg-hugepage=21 \
 &&	make build_lib && make install_include install_lib
 
-FROM alpine:3.11
+FROM alpine:3.12
 LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
 ENV pkgver 2.5

@@ -19,6 +19,15 @@ Neural is configured for low email volume.
 
 The docker offical image for redis has an alpine variant as well which is redis:alpine
 
+Configuration for Spamhaus [DQS](https://github.com/spamhaus/rspamd-dqs) is now added, to enable DQS:
+
+* Check the [usage terms](https://www.spamhaus.org/organization/dnsblusage/)
+* Register for a key with [Spamhaus](https://www.spamhaustech.com/dqs/).
+* Confirm email address, then access details will be emailed.
+* Login to portal, DQS key is the "Datafeed Query Account Key" [here](https://portal.spamhaustech.com/manuals/dqs)
+* Copy the key and write it to a file, then bind mount the file with docker to /etc/rspamd/rspamd-dqs/dqs-key
+* If the file exists DQS is then configured.
+
 ## Github
 Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)
 

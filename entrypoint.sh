@@ -118,9 +118,10 @@ then
   else
     echo "Your key is HBL enabled"
     cp *.conf rspamd.local.lua /etc/rspamd/local.d
+    sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" rspamd.local.lua
   fi
   cd /etc/rspamd/local.d
-  sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" *.conf rspamd.local.lua
+  sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" *.conf
 fi
 
 [ -f /usr/sbin/rspamd ] && s="s"

@@ -9,8 +9,7 @@ RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && mkdir /run/rspamd \
 && wget https://github.com/spamhaus/rspamd-dqs/archive/v${dqsver}.tar.gz \
 && tar -xzf v${dqsver}.tar.gz \
-&& cd rspamd-dqs-${dqsver} \
-&& mv 2.x /etc/rspamd/rspamd-dqs \
+&& mv rspamd-dqs-${dqsver}/2.x /etc/rspamd/rspamd-dqs \
 && cd /tmp && rm -Rf * 
 
 WORKDIR /usr/local/bin

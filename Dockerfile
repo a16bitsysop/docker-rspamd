@@ -10,6 +10,9 @@ RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && wget https://github.com/spamhaus/rspamd-dqs/archive/v${dqsver}.tar.gz \
 && tar -xzf v${dqsver}.tar.gz \
 && mv rspamd-dqs-${dqsver}/2.x /etc/rspamd/rspamd-dqs \
+&& cd /etc/rspamd/rspamd-dqs \
+&& rm rbl_group.conf \
+&& wget https://raw.githubusercontent.com/spamhaus/rspamd-dqs/master/2.x/rbl_group.conf \
 && cd /tmp && rm -Rf * 
 
 WORKDIR /usr/local/bin

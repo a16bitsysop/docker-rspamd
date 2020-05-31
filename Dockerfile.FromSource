@@ -25,6 +25,7 @@ RUN wget https://github.com/jemalloc/jemalloc/archive/${pkgver}.tar.gz \
 FROM alpine:3.12
 LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
+ENV dqsver 1.1.0
 ENV pkgver 2.5
 WORKDIR /tmp
 
@@ -33,6 +34,10 @@ RUN apk add --no-cache --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev luajit-dev  pcre2-dev libsodium-dev sqlite-dev \
 && addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
+&& wget https://github.com/spamhaus/rspamd-dqs/archive/v${dqsver}.tar.gz \
+&& tar -xzf v${dqsver}.tar.gz \
+&& cd rspamd-dqs-${dqsver} \
+&& mv 2.x /etc/rspamd/rspamd-dqs \ 
 && wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
 && tar -xzf ${pkgver}.tar.gz \
 && cd rspamd-${pkgver} 

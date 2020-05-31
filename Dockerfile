@@ -1,17 +1,16 @@
 FROM alpine:3.12
 LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
-ENV dqsver v1.1.0
+ENV dqsver 1.1.0
 
 WORKDIR /tmp
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && apk add --no-cache rspamd rspamd-fuzzy rspamd-controller rspamd-proxy drill \
 && mkdir /run/rspamd \
-&& wget https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
-&& tar -xzf ${dqsver}.tar.gz \
-&& cd rspamd-dqs-* \
-&& cp -a 2.x /etc/rspamd/rspamd-dqs \
-&& cp hbltest.sh /etc/rspamd/rspamd-dqs/ \
+&& wget https://github.com/spamhaus/rspamd-dqs/archive/v${dqsver}.tar.gz \
+&& tar -xzf v${dqsver}.tar.gz \
+&& cd rspamd-dqs-${dqsver} \
+&& mv 2.x /etc/rspamd/rspamd-dqs \
 && cd /tmp && rm -Rf * 
 
 WORKDIR /usr/local/bin

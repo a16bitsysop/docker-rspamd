@@ -63,7 +63,8 @@ do
   fi
 done
 
-rm -f {redis,antivirus,external_services}.conf
+rm -f {redis,antivirus,external_services,rbl,rbl_group,sh_rbl_group_hbl,sh_rbl_hbl}.conf
+rm -f rspamd.local.lua
 
 if [ -n "$REDIS" ]
 then
@@ -108,9 +109,6 @@ echo "enabled = $SUB;" > greylist.conf
 if [ -f /etc/rspamd/rspamd-dqs/dqs-key ]
 then
   echo "Setting up spamhaus DQS"
-  cd /etc/rspamd/local.d
-  rm -f {rbl,rbl_group,sh_rbl_group_hbl,sh_rbl_hbl}.conf
-  rm -f rspamd.local.lua
   cd /etc/rspamd/rspamd-dqs
   HBL=$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw.$(cat /etc/rspamd/rspamd-dqs/dqs-key).hbl.dq.spamhaus.net | grep -c "127.0.3.20")
   if [ "$HBL" -eq 0 ]

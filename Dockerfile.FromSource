@@ -33,8 +33,8 @@ COPY *.patch ./
 #COPY --from=jem-build /usr/lib/libjemalloc_pic.a /usr/lib/
 #COPY --from=jem-build /usr/include/jemalloc/jemalloc.h /usr/include/jemalloc/
 
-RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
-&& apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill
+RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
+RUN apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill
 RUN apk add --no-cache --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \

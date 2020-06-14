@@ -109,15 +109,15 @@ echo "enabled = $SUB;" > greylist.conf
 if [ -f /etc/rspamd/rspamd-dqs/dqs-key ]
 then
   echo "Setting up spamhaus DQS"
-  cd /etc/rspamd/rspamd-dqs
+  cd /etc/rspamd/local.d
   HBL=$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw.$(cat /etc/rspamd/rspamd-dqs/dqs-key).hbl.dq.spamhaus.net | grep -c "127.0.3.20")
   if [ "$HBL" -eq 0 ]
   then
     echo "Your key is not HBL enabled"
-    cp rbl.conf rbl_group.conf /etc/rspamd/local.d/
+    cp ../rspamd-dqs/rbl.conf ../rspamd-dqs/rbl_group.conf ./
   else
     echo "Your key is HBL enabled"
-    cp *.conf rspamd.local.lua /etc/rspamd/local.d/
+    cp ../rspamd-dqs/*.conf ../rspamd-dqs/rspamd.local.lua ./
     sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" rspamd.local.lua
   fi
   sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" *.conf

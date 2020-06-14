@@ -26,25 +26,25 @@ FROM alpine:3.12
 LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
 ENV dqsver master
+#ENV pkgver master
 ENV pkgver 2.5
 WORKDIR /tmp
-
-RUN apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs
-RUN apk add --no-cache --virtual .build-deps \
-	build-base perl cmake ragel binutils \
-	glib-dev icu-dev openssl-dev luajit-dev pcre2-dev libsodium-dev sqlite-dev \
-&& addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
-&& wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
-&& tar -xzf ${pkgver}.tar.gz \
-&& cd rspamd-${pkgver} 
-
-WORKDIR /tmp/rspamd-${pkgver}
-COPY 10-control_socket.patch .
-
+COPY *.patch ./
 #COPY --from=jem-build /usr/lib/libjemalloc_pic.a /usr/lib/
 #COPY --from=jem-build /usr/include/jemalloc/jemalloc.h /usr/include/jemalloc/
 
-RUN patch -p1 -i 10-control_socket.patch \
+RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
+&& apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill
+RUN apk add --no-cache --virtual .build-deps \
+	build-base perl cmake ragel binutils \
+	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \
+&& addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
+&& wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
+&& tar -xzf ${pkgver}.tar.gz \
+&& rm ${pkgver}.tar.gz \
+&& cd rspamd-* \
+&& patch -p1 -i /tmp/10-control_socket.patch \
+&& patch -p1 -i /tmp/11-moonjit.patch \
 && cmake -B build \
                 -DCMAKE_INSTALL_PREFIX=/usr \
                 -DCONFDIR=/etc/rspamd \
@@ -53,7 +53,7 @@ RUN patch -p1 -i 10-control_socket.patch \
 #		-DENABLE_JEMALLOC=ON \
 && make -C build && make -C build install \
 && cd /usr/bin \
-&& for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
+#&& for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
 && cd /tmp \
 && wget https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \

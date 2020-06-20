@@ -5,7 +5,7 @@ env:
 
 before_script:
   - VER=$(version.py -e -a $APK)
-  - VER=$VER"-alpine"$(version.py -e -b)
+  - VER=$VER"-alpine"$(version.py -b)
   - TAG="-t $IMAGE_NAME:$VER"
   - |
       MY_VER="$(version.py -d $IMAGE_NAME)"

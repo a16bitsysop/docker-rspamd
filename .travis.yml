@@ -4,12 +4,11 @@ env:
   - IMAGE_NAME=a16bitsysop/rspamd APK=rspamd
 
 before_script:
-  - VER=$(docker container run --rm alpine:edge sh -c "apk update > /dev/null; apk info -s "$APK" | head -n1 | sed -r 's+$APK-(.*) install.*+\1+g';")
-  - VER="$VER"-alpine"$(docker container run --rm alpine cat /etc/alpine-release)"
+  - VER=$(version.py -e -a $APK)
+  - VER=$VER"-alpine"$(version.py -e -b)
   - TAG="-t $IMAGE_NAME:$VER"
   - |
-      MY_VER="$(wget -q https://registry.hub.docker.com/v1/repositories/$IMAGE_NAME/tags -O - | sed -e 's+.*\"name\": \"++g' -e 's+\"}]++')"
-      for i in $MY_VER2; do [ "$i" != "latest" ] && MY_VER="$i"; done
+      MY_VER="$(version.py -d $IMAGE_NAME)"
       echo "Alpine Version $VER"
       echo "Docker Version $MY_VER"
       if [ -z $NOW ] && [ -n "$MY_VER" ] && [ "$MY_VER" = "$VER" ]; then travis_terminate 0; fi

@@ -15,5 +15,6 @@ before_script:
 
 script:
   - if [ -z "$NOW" ] || [ "$NOW" = "later" ]; then for i in {1..15}; do sleep 1m; echo "waiting $i mins"; done; fi
+  - docker-test.sh || travis_terminate 1
   - docker-build.sh "$VER" "$ALP_VER" "$APK_VER"
   - curl -X POST "https://hooks.microbadger.com/images/$IMAGE_NAME/$WEBHOOK"

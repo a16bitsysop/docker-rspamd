@@ -25,23 +25,9 @@ wait_port() {
   done
 }
 
-if [ -n "$TIMEZONE" ]
-then
-  echo "Waiting for DNS"
-  ping -c1 -W60 google.com || ping -c1 -W60 www.google.com || ping -c1 -W60 google-public-dns-b.google.com
-  apk add --no-cache tzdata
-  if [ -f /usr/share/zoneinfo/"$TIMEZONE" ]
-  then
-    echo "Setting timezone to $TIMEZONE"
-    cp /usr/share/zoneinfo/"$TIMEZONE" /etc/localtime
-    echo "$TIMEZONE" > /etc/timezone
-  else
-    echo "$TIMEZONE does not exist"
-  fi
-  apk del tzdata
-fi
+NME=rspamd
+set-timezone.sh "$NME"
 
-echo "Starting rspamd at $(date +'%x %X')"
 chown rspamd:rspamd /var/lib/rspamd
 cd /etc/rspamd/local.d
 chown rspamd:rspamd maps.d

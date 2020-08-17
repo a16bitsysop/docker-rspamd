@@ -13,7 +13,7 @@ RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && cd /tmp && rm -Rf * 
 
 WORKDIR /usr/local/bin
-COPY entrypoint.sh ./
+COPY travis-helpers/set-timezone.sh entrypoint.sh ./
 
 WORKDIR /etc/rspamd/local.orig
 COPY local.orig ./

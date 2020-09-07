@@ -62,7 +62,7 @@ if [ -n "$CLAMAV" ]
 then
   cp ../local.orig/antivirus.conf ./
   sed -r "s+(^servers).*+\1 = \"$CLAMAV:3310\";+g" -i antivirus.conf
-  wait_port "clamav" "$CLAMAV" 3310 10
+#  wait_port "clamav" "$CLAMAV" 3310 10
 fi
 
 if [ -n "$DCCIFD" ]

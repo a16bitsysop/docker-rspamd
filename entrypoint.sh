@@ -56,6 +56,8 @@ if [ -n "$REDIS" ]
 then
   cp ../local.orig/redis.conf ./
   sed -r "s+(^(read|write)_servers).*+\1 = \"$REDIS\";+g" -i redis.conf
+  wait_port "redis" "$REDIS" 6379
+  sleep 3s
 fi
 
 if [ -n "$CLAMAV" ]

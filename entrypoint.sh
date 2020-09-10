@@ -8,7 +8,6 @@ echo '$DCCIFD=' $DCCIFD
 echo '$CONTROLIP=' $CONTROLIP
 echo '$DNSSEC=' $DNSSEC
 echo '$NOGREY=' $NOGREY
-echo '$TIMEZONE=' $TIMEZONE
 echo
 
 wait_port() {
@@ -49,22 +48,20 @@ do
   fi
 done
 
-rm -f {redis,antivirus,external_services,rbl,rbl_group,sh_rbl_group_hbl,sh_rbl_hbl}.conf
+rm -f {antivirus,external_services,rbl,rbl_group,sh_rbl_group_hbl,sh_rbl_hbl}.conf
 rm -f rspamd.local.lua
 
 if [ -n "$REDIS" ]
 then
-  cp ../local.orig/redis.conf ./
-  sed -r "s+(^(read|write)_servers).*+\1 = \"$REDIS\";+g" -i redis.conf
+  sed -r "s+(.*_servers.*=).*+\1 \"$REDIS\";+" -i redis.conf
   wait_port "redis" "$REDIS" 6379
   sleep 3s
 fi
 
 if [ -n "$CLAMAV" ]
 then
-  cp ../local.orig/antivirus.conf ./
-  sed -r "s+(^servers).*+\1 = \"$CLAMAV:3310\";+g" -i antivirus.conf
-#  wait_port "clamav" "$CLAMAV" 3310 10
+echo -e "clamav {\nlog_clean = true;\nsymbol = CLAM_VIRUS;\ntype = clamav;\nservers = \"$CLAMAV:3310\";" > antivirus.conf
+echo -e "patterns {\n    JUST_EICAR = '^Eicar-Test-Signature$';\n  }\n}" >> antivirus.conf
 fi
 
 if [ -n "$DCCIFD" ]
@@ -75,7 +72,7 @@ fi
 
 if [ -n "$OLEFY" ]
 then
-  echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\"\n}" >> external_services.conf
+  echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\";\n}" >> external_services.conf
   wait_port "olefy" "$OLEFY" 10050
 fi
 

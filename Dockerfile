@@ -15,9 +15,6 @@ RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 WORKDIR /usr/local/bin
 COPY travis-helpers/set-timezone.sh entrypoint.sh ./
 
-WORKDIR /etc/rspamd/local.orig
-COPY local.orig ./
-
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./
 

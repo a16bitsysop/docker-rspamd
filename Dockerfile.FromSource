@@ -27,7 +27,7 @@ LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
 
 ENV dqsver master
 #ENV pkgver master
-ENV pkgver 2.5
+ENV pkgver 2.6
 WORKDIR /tmp
 COPY *.patch ./
 #COPY --from=jem-build /usr/lib/libjemalloc_pic.a /usr/lib/
@@ -44,7 +44,6 @@ RUN apk add --no-cache --virtual .build-deps \
 && rm ${pkgver}.tar.gz \
 && cd rspamd-* \
 && patch -p1 -i /tmp/10-control_socket.patch \
-&& patch -p1 -i /tmp/11-moonjit.patch \
 && cmake -B build \
                 -DCMAKE_INSTALL_PREFIX=/usr \
                 -DCONFDIR=/etc/rspamd \
@@ -65,9 +64,6 @@ RUN apk add --no-cache --virtual .build-deps \
 
 WORKDIR /usr/local/bin
 COPY entrypoint.sh ./
-
-WORKDIR /etc/rspamd/local.orig
-COPY local.orig ./
 
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./

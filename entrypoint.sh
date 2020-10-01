@@ -55,7 +55,8 @@ if [ -n "$REDIS" ]
 then
   sed -r "s+(.*_servers.*=).*+\1 \"$REDIS\";+" -i redis.conf
   wait_port "redis" "$REDIS" 6379
-  sleep 3s
+# let redis load database into memory
+  sleep 10s
 fi
 
 if [ -n "$CLAMAV" ]

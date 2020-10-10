@@ -122,7 +122,7 @@ if [ -f /etc/rspamd/rspamd-dqs/dqs-key ]
 then
   echo "Setting up spamhaus DQS"
   cd /etc/rspamd/local.d || exit 1
-  HBL="$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw.$(cat /etc/rspamd/rspamd-dqs/dqs-key).hbl.dq.spamhaus.net | grep -c "127.0.3.20")"
+  HBL=$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw."$(cat /etc/rspamd/rspamd-dqs/dqs-key)".hbl.dq.spamhaus.net | grep  -c "127.0.3.20")
   if [ "$HBL" -eq 0 ]
   then
     echo "Your key is not HBL enabled"

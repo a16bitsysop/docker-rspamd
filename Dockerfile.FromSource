@@ -36,7 +36,7 @@ COPY *.patch ./
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
 # hadolint ignore=DL3018
 RUN apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill
-# hadolint ignore=DL3018
+# hadolint ignore=DL3018,DL3003
 RUN apk add --no-cache --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \

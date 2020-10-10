@@ -5,7 +5,7 @@ Dockerfile to run [rspamd](https://rspamd.com/) as a docker container, worker-pr
 [![Docker Stars](https://img.shields.io/docker/stars/a16bitsysop/rspamd.svg?style=flat-square)](https://hub.docker.com/r/a16bitsysop/rspamd/)
 [![Version](https://images.microbadger.com/badges/version/a16bitsysop/rspamd.svg)](https://microbadger.com/images/a16bitsysop/rspamd "Get your own version badge on microbadger.com")
 [![Commit](https://images.microbadger.com/badges/commit/a16bitsysop/rspamd.svg)](https://microbadger.com/images/a16bitsysop/rspamd "Get your own commit badge on microbadger.com")
-
+[![GitHub Super-Linter](https://github.com/a16bitsysop/docker-rspamd/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 It has several map files which can be edited in the web UI, including filename for extensions to reject and whitelist for domains to whitelist.  The maps are stored in /etc/rspamd/local.d/maps.d , they are also copied from maps.orig to maps.d if not present during startup for a container with mounted volumes or new maps in a newer image.
 
 To generate a password hash for the web interface run container then run rspamd_pw.sh and copy output into /etc/rspamd/override.d/worker-controller.inc.  Or exec rspamadm pw inside container and use result for password and enable_password.

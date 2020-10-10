@@ -18,7 +18,7 @@ wait_port() {
   do
     nc -zv "$2" "$3" && return
     echo "."
-    TL=`expr "$TL" + "$INC"`
+    TL=$((TL + INC))
     [ "$TL" -gt 90 ] && return 1
     sleep "$INC"
   done
@@ -32,9 +32,9 @@ cd /etc/rspamd/local.d || exit 1
 chown rspamd:rspamd maps.d
 
 echo "Checking for new map files"
-cd maps.orig | exit 1
+cd maps.orig || exit 1
 MAPS=$(find ./ -name '*.map')
-cd .. | exit 1
+cd .. || exit 1
 
 for m in ${MAPS};
 do
@@ -95,7 +95,7 @@ echo "enabled = $SUB;" > greylist.conf
 if [ -f /etc/rspamd/rspamd-dqs/dqs-key ]
 then
   echo "Setting up spamhaus DQS"
-  cd /etc/rspamd/local.d | exit 1
+  cd /etc/rspamd/local.d || exit 1
   HBL=$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw.$(cat /etc/rspamd/rspamd-dqs/dqs-key).hbl.dq.spamhaus.net | grep -c "127.0.3.20")
   if [ "$HBL" -eq 0 ]
   then

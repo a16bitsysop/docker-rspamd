@@ -3,8 +3,8 @@ Dockerfile to run [rspamd](https://rspamd.com/) as a docker container, worker-pr
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/a16bitsysop/rspamd.svg?style=flat-square)](https://hub.docker.com/r/a16bitsysop/rspamd/)
 [![Docker Stars](https://img.shields.io/docker/stars/a16bitsysop/rspamd.svg?style=flat-square)](https://hub.docker.com/r/a16bitsysop/rspamd/)
-[![](https://images.microbadger.com/badges/version/a16bitsysop/rspamd.svg)](https://microbadger.com/images/a16bitsysop/rspamd "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/commit/a16bitsysop/rspamd.svg)](https://microbadger.com/images/a16bitsysop/rspamd "Get your own commit badge on microbadger.com")
+[![Version](https://images.microbadger.com/badges/version/a16bitsysop/rspamd.svg)](https://microbadger.com/images/a16bitsysop/rspamd "Get your own version badge on microbadger.com")
+[![Commit](https://images.microbadger.com/badges/commit/a16bitsysop/rspamd.svg)](https://microbadger.com/images/a16bitsysop/rspamd "Get your own commit badge on microbadger.com")
 
 It has several map files which can be edited in the web UI, including filename for extensions to reject and whitelist for domains to whitelist.  The maps are stored in /etc/rspamd/local.d/maps.d , they are also copied from maps.orig to maps.d if not present during startup for a container with mounted volumes or new maps in a newer image.
 
@@ -48,11 +48,11 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 
 ## Examples
 To run connecting to container network without exposing ports (accessible from host network), and docker managed volumes
-```
+```bash
 #docker container run --net MYNET --name rspamd --restart=unless-stopped --mount source=rspamd-var,target=/var/lib/rspamd --mount source=rspamd-over,target=/etc/rspamd/override.d -d a16bitsysop/rspamd
 ```
 
 To run without connecting to container network exposing ports (accessible from host network), and docker managed volumes
-```
+```bash
 #docker container run -p 11332:11332 -p 11334:11334 --name rspamd --restart=unless-stopped --mount source=rspamd-var,target=/var/lib/rspamd --mount source=rspamd-over,target=/etc/rspamd/override.d -d a16bitsysop/rspamd
 ```

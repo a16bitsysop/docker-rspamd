@@ -49,7 +49,7 @@ do
 done
 
 conf_files="antivirus external_services rbl rbl_group sh_rbl_group_hbl sh_rbl_hbl"
-for n in {$conf_files}
+for n in ${conf_files}
 do
   rm -f "$n".conf
 done

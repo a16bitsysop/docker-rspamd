@@ -1,13 +1,13 @@
 #!/bin/sh
 #display environment variables passed with --env
-echo '$REDIS=' $REDIS
-echo '$CLAMAV=' $CLAMAV
-echo '$OLEFY=' $OLEFY
-echo '$RAZORFY=' $RAZORFY
-echo '$DCCIFD=' $DCCIFD
-echo '$CONTROLIP=' $CONTROLIP
-echo '$DNSSEC=' $DNSSEC
-echo '$NOGREY=' $NOGREY
+echo "\$REDIS= $REDIS"
+echo "\$CLAMAV= $CLAMAV"
+echo "\$OLEFY= $OLEFY"
+echo "\$RAZORFY= $RAZORFY"
+echo "\$DCCIFD= $DCCIFD"
+echo "\$CONTROLIP= $CONTROLIP"
+echo "\$DNSSEC= $DNSSEC"
+echo "\$NOGREY= $NOGREY"
 echo
 
 wait_port() {
@@ -28,15 +28,15 @@ NME=rspamd
 set-timezone.sh "$NME"
 
 chown rspamd:rspamd /var/lib/rspamd
-cd /etc/rspamd/local.d
+cd /etc/rspamd/local.d || exit 1
 chown rspamd:rspamd maps.d
 
 echo "Checking for new map files"
 cd maps.orig
-MAPS=$(find -name '*.map')
-cd ..
+MAPS=$(find ./ -name '*.map')
+cd .. | exit 1
 
-for m in $MAPS;
+for m in ${MAPS};
 do
   echo "Checking $m"
   if [ ! -f maps.d/"$m" ]

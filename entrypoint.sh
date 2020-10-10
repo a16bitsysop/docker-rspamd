@@ -49,7 +49,7 @@ do
 done
 
 conf_files="antivirus external_services rbl rbl_group sh_rbl_group_hbl sh_rbl_hbl"
-for n in "$conf_files"
+for n in {$conf_files}
 do
   rm -f "$n".conf
 done
@@ -65,30 +65,37 @@ fi
 
 if [ -n "$CLAMAV" ]
 then
-/bin/echo -e "clamav {\nlog_clean = true;\nsymbol = CLAM_VIRUS;\ntype = clamav;\nservers = \"$CLAMAV:3310\";" > antivirus.conf
-/bin/echo -e "patterns {\n    JUST_EICAR = '^Eicar-Test-Signature$';\n  }\n}" >> antivirus.conf
+# spellcheck disable=SC2039
+echo -e "clamav {\nlog_clean = true;\nsymbol = CLAM_VIRUS;\ntype = clamav;\nservers = \"$CLAMAV:3310\";" > antivirus.conf
+# spellcheck disable=SC2039
+echo -e "patterns {\n    JUST_EICAR = '^Eicar-Test-Signature$';\n  }\n}" >> antivirus.conf
 fi
 
 if [ -n "$DCCIFD" ]
 then
-  /bin/echo -e "dcc {\nservers = \"$DCCIFD:10045\";\n}" >> external_services.conf
+# spellcheck disable=SC2039
+  echo -e "dcc {\nservers = \"$DCCIFD:10045\";\n}" >> external_services.conf
   wait_port "dccifd" "$DCCIFD" 10045
 fi
 
 if [ -n "$OLEFY" ]
 then
-  /bin/echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\";\n}" >> external_services.conf
+# spellcheck disable=SC2039
+  echo -e "oletools {\n   type = \"oletools\";\n  servers = \"$OLEFY:10050\";\n}" >> external_services.conf
   wait_port "olefy" "$OLEFY" 10050
 fi
 
 if [ -n "$RAZORFY" ]
 then
-  /bin/echo -e "razor {\nservers = \"$RAZORFY:11342\";\n}" >> external_services.conf
+# spellcheck disable=SC2039
+  echo -e "razor {\nservers = \"$RAZORFY:11342\";\n}" >> external_services.conf
   wait_port "razorfy" "$RAZORFY" 11342
 fi
 
-/bin/echo -e "bind_socket = \"*:11334\";" > worker-controller.inc
-[ -n "$CONTROLIP" ] && /bin/echo -e "secure_ip = \"$CONTROLIP\";" >> worker-controller.inc
+# spellcheck disable=SC2039
+echo -e "bind_socket = \"*:11334\";" > worker-controller.inc
+# spellcheck disable=SC2039
+[ -n "$CONTROLIP" ] && echo -e "secure_ip = \"$CONTROLIP\";" >> worker-controller.inc
 
 [ -n "$DNSSEC" ] && SUB=true || SUB=false
 sed -r "s+(.*enable_dnssec).*+\1 = $SUB;+g" -i options.inc

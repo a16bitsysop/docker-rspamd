@@ -56,7 +56,7 @@ then
   sed -r "s+(.*_servers.*=).*+\1 \"$REDIS\";+" -i redis.conf
   wait_port "redis" "$REDIS" 6379
 # let redis load database into memory
-  sleep 10s
+  sleep 60s
 fi
 
 if [ -n "$CLAMAV" ]

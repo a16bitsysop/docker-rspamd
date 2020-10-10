@@ -1,5 +1,5 @@
 FROM alpine:3.12
-LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
+LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 
 ENV dqsver master
 

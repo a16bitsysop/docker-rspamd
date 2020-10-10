@@ -32,7 +32,7 @@ cd /etc/rspamd/local.d || exit 1
 chown rspamd:rspamd maps.d
 
 echo "Checking for new map files"
-cd maps.orig
+cd maps.orig | exit 1
 MAPS=$(find ./ -name '*.map')
 cd .. | exit 1
 
@@ -95,7 +95,7 @@ echo "enabled = $SUB;" > greylist.conf
 if [ -f /etc/rspamd/rspamd-dqs/dqs-key ]
 then
   echo "Setting up spamhaus DQS"
-  cd /etc/rspamd/local.d
+  cd /etc/rspamd/local.d | exit 1
   HBL=$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw.$(cat /etc/rspamd/rspamd-dqs/dqs-key).hbl.dq.spamhaus.net | grep -c "127.0.3.20")
   if [ "$HBL" -eq 0 ]
   then

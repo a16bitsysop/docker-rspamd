@@ -4,6 +4,7 @@ LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 ENV dqsver master
 
 WORKDIR /tmp
+# hadolint ignore=DL3018
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && apk add --no-cache rspamd rspamd-fuzzy rspamd-controller rspamd-proxy drill \
 && mkdir /run/rspamd \

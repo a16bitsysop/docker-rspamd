@@ -23,7 +23,7 @@
 #&&	make build_lib && make install_include install_lib
 
 FROM alpine:3.12
-LABEL maintainer "Duncan Bellamy <dunk@denkimushi.com>"
+LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 
 ENV dqsver master
 #ENV pkgver master
@@ -34,7 +34,9 @@ COPY *.patch ./
 #COPY --from=jem-build /usr/include/jemalloc/jemalloc.h /usr/include/jemalloc/
 
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
+# hadolint ignore=DL3018
 RUN apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill
+# hadolint ignore=DL3018
 RUN apk add --no-cache --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \

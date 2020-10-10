@@ -11,7 +11,7 @@ RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && wget https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
 && mv rspamd-dqs-${dqsver}/2.x /etc/rspamd/rspamd-dqs \
-&& cd /tmp && rm -Rf * 
+&& cd /tmp && rm -Rf ./*
 
 WORKDIR /usr/local/bin
 COPY travis-helpers/set-timezone.sh entrypoint.sh ./

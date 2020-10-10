@@ -59,7 +59,7 @@ RUN apk add --no-cache --virtual .build-deps \
 && wget https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
 && mv rspamd-dqs-*/2.x /etc/rspamd/rspamd-dqs \
-&& rm -Rf * \
+&& rm -Rf ./* \
 && apk del .build-deps \
 #&& rm /usr/lib/libjemalloc_pic.a && rm -Rf /usr/include/jemalloc
 && mkdir /etc/rspamd/override.d

@@ -122,7 +122,7 @@ if [ -f /etc/rspamd/rspamd-dqs/dqs-key ]
 then
   echo "Setting up spamhaus DQS"
   cd /etc/rspamd/local.d || exit 1
-  HBL=$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw.$(cat /etc/rspamd/rspamd-dqs/dqs-key).hbl.dq.spamhaus.net | grep -c "127.0.3.20")
+  HBL="$(drill TV7QRQPGBKF4X3K4T5QYILRI3SP5CIWVIIOH25YUOGVOJ3SBTYNA._cw.$(cat /etc/rspamd/rspamd-dqs/dqs-key).hbl.dq.spamhaus.net | grep -c "127.0.3.20")"
   if [ "$HBL" -eq 0 ]
   then
     echo "Your key is not HBL enabled"
@@ -132,7 +132,7 @@ then
     cp ../rspamd-dqs/*.conf ../rspamd-dqs/rspamd.local.lua ./
     sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" rspamd.local.lua
   fi
-  sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" *.conf
+  sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" ./*.conf
 fi
 
 [ -f /usr/sbin/rspamd ] && s="s"

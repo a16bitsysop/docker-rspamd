@@ -35,7 +35,7 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 ## Environment Variables
 
 | NAME      | Description                                            | Default            |
-| --------- | ------------------------------------------------------ | ------------------ | 
+| --------- | ------------------------------------------------------ | ------------------ |
 | REDIS     | name/container name or IP of the redis server.         | none (No redis)    |
 | OLEFY     | name/container name or IP of the Olefy server.         | do not use Olefy   |
 | RAZORFY   | name/container name or IP of the Razorfy server.       | do not use Razorfy |

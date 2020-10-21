@@ -1,0 +1,178 @@
+name: Docker-Build-Push
+
+# Run this workflow every time a new commit pushed to docker-build branch
+on: 
+  push:
+    branches:
+      - docker-build
+
+jobs:
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  super-lint:
+    # Name the Job
+    name: Lint code base
+    # Set the type of machine to run on
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+
+      # Runs the Super-Linter action
+      - name: Run Super-Linter
+        uses: github/super-linter@v3
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-test:
+    name: Build test image and test
+    runs-on: ubuntu-latest
+    needs: super-lint
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          version: latest
+      -
+        name: Build Test Image
+        run: |
+          export DOCKER_CONTENT_TRUST=1 
+          docker buildx build -t testimage --load .
+      -
+        name: Scan Test Iamge
+        uses: Azure/container-scan@v0
+        with:
+          image-name: testimage
+
+  buildx:
+    name: Build and push
+    runs-on: ubuntu-latest
+    needs: build-test
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      -
+        name: Setup Path
+        run: |
+          echo "${GITHUB_WORKSPACE}"/travis-helpers >> $GITHUB_PATH
+          echo ${HOME}/.local/bin >> $GITHUB_PATH
+      -
+        name: Install helper dependencies
+        run: |
+          python3 -m pip install --upgrade pip setuptools wheel
+          python3 -m pip install --upgrade docker natsort bs4
+      -
+        name: Get Label Info
+        id: docklabel
+        run: |
+          INFO=README.md
+          if [ -f "$INFO" ]; then
+            echo "Reading $INFO..."
+            NAME="$(head -1 README.md| cut -d' ' -f2)"
+            DESC="$(head -2 README.md | tail -n1)"
+          else
+            echo "$INFO not found"
+            DESC="None"
+          fi
+
+          [ $EDGE == "yes" ] && _e="-e"
+          APK_VER="$(version.py $_e -a $APK)"
+          ALP_VER="$(version.py -b)"
+          echo "$ALP_VER, $APK is $APK_VER"
+          echo "name: $NAME"
+          echo "desc: $DESC"
+          echo "::set-output name=apk_ver::$APK_VER"
+          echo "::set-output name=alp_ver::$ALP_VER"
+          echo "::set-output name=ver::$APK_VER-alpine$ALP_VER"
+          echo "::set-output name=name-label::$NAME"
+          echo "::set-output name=desc::$DESC"
+          echo "::set-output name=plats::$PLATS"
+          echo "::set-output name=img::$IMAGE_NAME"
+          echo "::set-output name=date::=$(date -u +"%Y-%m-%d %H:%M:%S")"
+          echo "::set-output name=sha::$GITHUB_SHA"
+          echo "::set-output name=repo::$GITHUB_REPOSITORY"
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: ${{ steps.docklabel.outputs.plats }}
+      -
+        name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          version: latest
+      -
+        name: Available Platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      -
+        name: Show Labels
+        run: |
+          echo "Alpine Ver:  ${{ steps.docklabel.outputs.alp_ver }}"
+          echo "Main Apk: $APK"
+          echo "Apk Ver: ${{ steps.docklabel.outputs.apk_ver }}"
+          echo "Tag Ver: ${{ steps.docklabel.outputs.ver }}"
+          echo "Name: ${{ steps.docklabel.outputs.name-label }}"
+          echo "Desc: ${{ steps.docklabel.outputs.desc }}"
+          echo "Platforms: ${{ steps.docklabel.outputs.plats }}"
+          echo "Image Name: ${{ steps.docklabel.outputs.img }}"
+          echo "Date: ${{ steps.docklabel.outputs.date }}"
+          echo "Sha: ${{ steps.docklabel.outputs.sha }}"
+          echo "Repo: ${{ steps.docklabel.outputs.repo }}"
+      -
+        name: Build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: ./Dockerfile
+          platforms: ${{ steps.docklabel.outputs.plats }}
+          push: true
+          tags: |
+            ${{ steps.docklabel.outputs.img }}:${{ steps.docklabel.outputs.ver }}
+            ${{ steps.docklabel.outputs.img }}
+          labels: |
+            "org.label-schema.schema-version=1.0"
+            "org.label-schema.build-date=${{ steps.docklabel.outputs.date }}"
+            "org.label-schema.version=${{ steps.docklabel.outputs.ver }}"
+            "org.label-schema.vcs-ref=${{ steps.docklabel.outputs.sha }}"
+            "org.label-schema.vcs-url=https://github.com/${{ steps.docklabel.outputs.repo }}"
+            "org.label-schema.name=${{ steps.docklabel.outputs.name-label }}"
+            "org.label-schema.version=${{ steps.docklabel.outputs.apk_ver }}"
+            "org.label-schema.description=${{ steps.docklabel.outputs.desc }}"
+            "alpine-version=${{ steps.docklabel.outputs.alp_ver }}"
+      -
+        name: Update Microbadger Badges
+        run: |
+          [ -n "$WEBHOOK" ] && curl -X POST "https://hooks.microbadger.com/images/$IMAGE_NAME/$WEBHOOK" || echo "\$WEBHOOK not set"
+    env:
+      PLATS: linux/386,linux/amd64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm64
+      IMAGE_NAME: a16bitsysop/rspamd
+      APK: rspamd
+#     yes to get edge version of APK
+      EDGE: yes
+# in github secrets for repo
+#     DOCKER_USERNANE
+#     DOCKER_PASSWORD
+#     WEBHOOK

@@ -103,7 +103,7 @@ jobs:
           echo "::set-output name=desc::$DESC"
           echo "::set-output name=plats::$PLATS"
           echo "::set-output name=img::$IMAGE_NAME"
-          echo "::set-output name=date::=$(date -u +"%Y-%m-%d %H:%M:%S")"
+          echo "::set-output name=date::$(date -u +'%Y-%m-%d %H:%M:%S')"
           echo "::set-output name=sha::$GITHUB_SHA"
           echo "::set-output name=repo::$GITHUB_REPOSITORY"
       -
@@ -153,19 +153,23 @@ jobs:
             ${{ steps.docklabel.outputs.img }}:${{ steps.docklabel.outputs.ver }}
             ${{ steps.docklabel.outputs.img }}
           labels: |
-            "org.label-schema.schema-version=1.0"
-            "org.label-schema.build-date=${{ steps.docklabel.outputs.date }}"
-            "org.label-schema.version=${{ steps.docklabel.outputs.ver }}"
-            "org.label-schema.vcs-ref=${{ steps.docklabel.outputs.sha }}"
-            "org.label-schema.vcs-url=https://github.com/${{ steps.docklabel.outputs.repo }}"
-            "org.label-schema.name=${{ steps.docklabel.outputs.name-label }}"
-            "org.label-schema.version=${{ steps.docklabel.outputs.apk_ver }}"
-            "org.label-schema.description=${{ steps.docklabel.outputs.desc }}"
-            "alpine-version=${{ steps.docklabel.outputs.alp_ver }}"
+            org.label-schema.schema-version=1.0
+            org.label-schema.build-date=${{ steps.docklabel.outputs.date }}
+            org.label-schema.version=${{ steps.docklabel.outputs.ver }}
+            org.label-schema.vcs-ref=${{ steps.docklabel.outputs.sha }}
+            org.label-schema.vcs-url=https://github.com/${{ steps.docklabel.outputs.repo }}
+            org.label-schema.name=${{ steps.docklabel.outputs.name-label }}
+            org.label-schema.version=${{ steps.docklabel.outputs.apk_ver }}
+            org.label-schema.description=${{ steps.docklabel.outputs.desc }}
+            alpine-version=${{ steps.docklabel.outputs.alp_ver }}
       -
         name: Update Microbadger Badges
         run: |
-          [ -n "$WEBHOOK" ] && curl -X POST "https://hooks.microbadger.com/images/$IMAGE_NAME/$WEBHOOK" || echo "\$WEBHOOK not set"
+          if [ -n "$WEBHOOK" ]; then
+            curl -X POST "https://hooks.microbadger.com/images/$IMAGE_NAME/$WEBHOOK"
+          else
+            echo "\$WEBHOOK not set"
+          fi
     env:
       PLATS: linux/386,linux/amd64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm64
       IMAGE_NAME: a16bitsysop/rspamd

@@ -165,10 +165,11 @@ jobs:
       -
         name: Update Microbadger Badges
         run: |
-          if [ -n "$WEBHOOK" ]; then
-            curl -X POST "https://hooks.microbadger.com/images/$IMAGE_NAME/$WEBHOOK"
-          else
+          if [ -z ${{ secrets.WEBHOOK }} ]; then
             echo "\$WEBHOOK not set"
+          else
+            echo "Triggering Microbadger \$WEBHOOK"
+            curl -X POST "https://hooks.microbadger.com/images/$IMAGE_NAME/${{ secrets.WEBHOOK }}"
           fi
     env:
       PLATS: linux/386,linux/amd64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm64

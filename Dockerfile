@@ -6,7 +6,7 @@ ENV dqsver master
 WORKDIR /tmp
 # hadolint ignore=DL3018,DL3003
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
-&& apk add --no-cache rspamd rspamd-fuzzy rspamd-controller rspamd-proxy drill \
+&& apk add --no-cache rspamd rspamd-fuzzy rspamd-controller rspamd-proxy drill sqlite \
 && mkdir /run/rspamd \
 && wget https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \

@@ -30,6 +30,10 @@ Configuration for Spamhaus [DQS](https://github.com/spamhaus/rspamd-dqs) is now 
 * Copy the key and write it to a file, then bind mount the file with docker to /etc/rspamd/rspamd-dqs/dqs-key
 * If the file exists DQS is then configured.
 
+Abuse.ch, the Malware Bazaar hashes are downloaded every BZSLEEP hours if set,
+minimum is 1 hour as they are updated every hour.
+See [here](https://bazaar.abuse.ch/).
+
 ## Github
 Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)
 
@@ -45,7 +49,8 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 | CONTROLIP | name/container name or IP of rspamc process.           | none               |
 | DNSSEC    | enable dnssec for dns lookups.                         | no dnssec          |
 | NOGREY    | disable greylisting (soft reject).                     | greylist           |
-| TIMEZONE  | Timezone to use inside the container, eg Europe/London | unset              |
+| BZSLEEP   | hours between updates of abuse.ch hashes eg 1.5        | unset / disabled   |
+| TIMEZONE  | timezone to use inside the container, eg Europe/London | unset              |
 
 ## Examples
 To run connecting to container network without exposing ports (accessible from host network), and docker managed volumes

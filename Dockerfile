@@ -6,7 +6,7 @@ ENV dqsver master
 WORKDIR /tmp
 # hadolint ignore=DL3018,DL3003
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
-&& apk add --no-cache rspamd rspamd-fuzzy rspamd-controller rspamd-proxy drill sqlite \
+&& apk add --no-cache rspamd rspamd-fuzzy rspamd-controller rspamd-proxy drill \
 && mkdir /run/rspamd \
 && wget https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
@@ -14,7 +14,7 @@ RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && cd /tmp && rm -Rf ./*
 
 WORKDIR /usr/local/bin
-COPY travis-helpers/set-timezone.sh entrypoint.sh ./
+COPY travis-helpers/set-timezone.sh entrypoint.sh update_bazaar.sh ./
 
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./

@@ -8,6 +8,7 @@ echo "\$DCCIFD= $DCCIFD"
 echo "\$CONTROLIP= $CONTROLIP"
 echo "\$DNSSEC= $DNSSEC"
 echo "\$NOGREY= $NOGREY"
+echo "\$BZSLEEP= $BZSLEEP"
 echo
 
 wait_port() {
@@ -62,6 +63,9 @@ then
 # let redis load database into memory
   sleep 60s
 fi
+
+# start update abuse.ch malware bazaar hashes
+[ -n "$BZSLEEP" ] && su rspamd -s /bin/sh -c "update_bazaar.sh" &
 
 if [ -n "$CLAMAV" ]
 then

@@ -37,7 +37,7 @@ See [here](https://bazaar.abuse.ch/).
 The [url_redirector](https://rspamd.com/doc/modules/url_redirector.html) module
 is configured to read domain names from local.d/maps.d/redirectors.inc
 This can be copied from the main rspamd config into local.d/maps.d if SYSREDIR
-is set, it will not overrite redirectors.inc if it is already in local.d/maps.d 
+is set, it will not overrite redirectors.inc if it is already in local.d/maps.d
 
 ## Github
 Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)

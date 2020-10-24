@@ -9,6 +9,7 @@ echo "\$CONTROLIP= $CONTROLIP"
 echo "\$DNSSEC= $DNSSEC"
 echo "\$NOGREY= $NOGREY"
 echo "\$BZSLEEP= $BZSLEEP"
+echo "\$SYSREDIR= $SYSREDIR"
 echo
 
 wait_port() {
@@ -30,7 +31,17 @@ set-timezone.sh "$NME"
 
 chown rspamd:rspamd /var/lib/rspamd
 cd /etc/rspamd/local.d || exit 1
-chown rspamd:rspamd maps.d
+
+if [ -n "$SYSREDIR" ]
+then
+  if [ ! -f maps.d/redirectors.inc ]
+  then
+    echo "Copying Rspamd redirectors.inc into local.d/maps.d"
+    cp ../maps.d/redirectors.inc maps.d/
+  else
+    echo "local.d/maps.d/redirectors.inc exists, skipping"
+  fi
+fi
 
 echo "Checking for new map files"
 cd maps.orig || exit 1
@@ -48,6 +59,8 @@ do
     echo "Skipping $m, already in maps.d"
   fi
 done
+
+chown -R rspamd:rspamd maps.d
 
 conf_files="antivirus external_services rbl rbl_group sh_rbl_group_hbl sh_rbl_hbl"
 for n in ${conf_files}

@@ -34,6 +34,11 @@ Abuse.ch, the Malware Bazaar hashes are downloaded every BZSLEEP hours if set,
 minimum is 1 hour as they are updated every hour.
 See [here](https://bazaar.abuse.ch/).
 
+The [url_redirector](https://rspamd.com/doc/modules/url_redirector.html) module
+is configured to read domain names from local.d/maps.d/redirectors.inc
+This can be copied from the main rspamd config into local.d/maps.d if SYSREDIR
+is set, it will not overrite redirectors.inc if it is already in local.d/maps.d
+
 ## Github
 Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)
 
@@ -50,6 +55,7 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 | DNSSEC    | enable dnssec for dns lookups.                         | no dnssec          |
 | NOGREY    | disable greylisting (soft reject).                     | greylist           |
 | BZSLEEP   | hours between updates of abuse.ch hashes eg 1.5        | unset / disabled   |
+| SYSREDIR  | copy rsypamd redirectors.inc for url_redirector to use | unset / don't copy |
 | TIMEZONE  | timezone to use inside the container, eg Europe/London | unset              |
 
 ## Examples
@@ -62,3 +68,7 @@ To run without connecting to container network exposing ports (accessible from h
 ```bash
 #docker container run -p 11332:11332 -p 11334:11334 --name rspamd --restart=unless-stopped --mount source=rspamd-var,target=/var/lib/rspamd --mount source=rspamd-over,target=/etc/rspamd/override.d -d a16bitsysop/rspamd
 ```
+
+### Sources
+Based on configuration [here](https://thomas-leister.de/en/mailserver-debian-stretch/)
+The rspamd [user mailing list](https://lists.rspamd.com/mailman/listinfo)

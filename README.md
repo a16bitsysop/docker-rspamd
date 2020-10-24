@@ -17,7 +17,7 @@ It is configured to read the dkim/arc keys from redis, to manually add a key to 
 
 To change the configuration add changes to the /etc/rspamd/override.d directory, and mount it with a volume.
 
-Neural is configured for low email volume.
+The Neural module, and alot of changes from default are configured for low email volume.
 
 The docker offical image for redis has an alpine variant as well which is redis:alpine
 
@@ -71,4 +71,5 @@ To run without connecting to container network exposing ports (accessible from h
 
 ### Sources
 Based on configuration [here](https://thomas-leister.de/en/mailserver-debian-stretch/)
+
 The rspamd [user mailing list](https://lists.rspamd.com/mailman/listinfo)

@@ -34,6 +34,12 @@ Abuse.ch, the Malware Bazaar hashes are downloaded every BZSLEEP hours if set,
 minimum is 1 hour as they are updated every hour.
 See [here](https://bazaar.abuse.ch/).
 
+Spamassassin rules from heinlein-support.de are loaded every HLSLEEP hours if set. They include
+regularly updated spamassassin filter rules, mainly for German spam.
+If the rules changed after the update, rspamd is restarted automatically via SIGHUP.
+See [here](https://www.heinlein-support.de/blog/news/aktuelle-spamassassin-regeln-von-heinlein-support/) for a
+more detailed description in German.
+
 The [url_redirector](https://rspamd.com/doc/modules/url_redirector.html) module
 is configured to read domain names from local.d/maps.d/redirectors.inc
 This can be copied from the main rspamd config into local.d/maps.d if SYSREDIR
@@ -55,6 +61,7 @@ Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github
 | DNSSEC    | enable dnssec for dns lookups.                         | no dnssec          |
 | NOGREY    | disable greylisting (soft reject).                     | greylist           |
 | BZSLEEP   | hours between updates of abuse.ch hashes eg 1.5        | unset / disabled   |
+| HLSLEEP   | hours between updates of heinleins spamassassin rules  | unset / disabled   |
 | SYSREDIR  | copy rsypamd redirectors.inc for url_redirector to use | unset / don't copy |
 | TIMEZONE  | timezone to use inside the container, eg Europe/London | unset              |
 

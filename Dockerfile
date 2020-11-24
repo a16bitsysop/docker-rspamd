@@ -14,7 +14,7 @@ RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && cd /tmp && rm -Rf ./*
 
 WORKDIR /usr/local/bin
-COPY travis-helpers/set-timezone.sh entrypoint.sh update_bazaar.sh ./
+COPY travis-helpers/set-timezone.sh entrypoint.sh update_bazaar.sh update_sa_heinlein.sh update_sa_heinlein_daemon.sh ./
 
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./

@@ -5,14 +5,14 @@
 set -e
 
 # Create temp directories
-[[ ! -d /tmp/sa-rules-heinlein ]] && mkdir -p /tmp/sa-rules-heinlein
+[ ! -d /tmp/sa-rules-heinlein ] && mkdir -p /tmp/sa-rules-heinlein
 
 echo "Updating heinlein rules"
 # Hash current SA rules
-if [[ ! -f /etc/rspamd/custom/sa-rules ]]; then
+if [ ! -f /etc/rspamd/custom/sa-rules ]; then
   HASH_SA_RULES=0
 else
-  HASH_SA_RULES=$(cat /etc/rspamd/custom/sa-rules | md5sum | cut -d' ' -f1)
+  HASH_SA_RULES=$(md5sum /etc/rspamd/custom/sa-rules | cut -d' ' -f1)
 fi
 
 # Deploy
@@ -27,7 +27,7 @@ fi
 sed -i -e 's/\([^\\]\)\$\([^\/]\)/\1\\$\2/g' /etc/rspamd/custom/sa-rules
 
 # restart rspamd with SIGHUP if hash changed
-if [[ "$(cat /etc/rspamd/custom/sa-rules | md5sum | cut -d' ' -f1)" != "${HASH_SA_RULES}" ]]; then
+if [ "$(md5sum /etc/rspamd/custom/sa-rules | cut -d' ' -f1)" != "${HASH_SA_RULES}" ]; then
   echo "Restarting rspamd"
   killall -SIGHUP rspamd || true
 fi

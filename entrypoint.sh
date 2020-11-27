@@ -9,6 +9,7 @@ echo "\$CONTROLIP= $CONTROLIP"
 echo "\$DNSSEC= $DNSSEC"
 echo "\$NOGREY= $NOGREY"
 echo "\$BZSLEEP= $BZSLEEP"
+echo "\$HLSLEEP= $HLSLEEP"
 echo "\$SYSREDIR= $SYSREDIR"
 echo
 
@@ -79,6 +80,17 @@ fi
 
 # start update abuse.ch malware bazaar hashes
 [ -n "$BZSLEEP" ] && su rspamd -s /bin/sh -c "update_bazaar.sh" &
+
+# update heinlein rules once & start daemon to update them in the background
+if [ -n "$HLSLEEP" ]
+then
+  echo 'ruleset = "/etc/rspamd/custom/sa-rules";' > spamassassin.conf
+  mkdir /etc/rspamd/custom/
+  /usr/local/bin/update_sa_heinlein.sh
+  /usr/local/bin/update_sa_heinlein_daemon.sh &
+else
+  rm -f spamassassin.conf
+fi
 
 if [ -n "$CLAMAV" ]
 then

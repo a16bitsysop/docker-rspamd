@@ -7,32 +7,41 @@ set -e
 # Create temp directories
 [ ! -d /tmp/sa-rules-heinlein ] && mkdir -p /tmp/sa-rules-heinlein
 
-echo "Updating heinlein rules"
+echo "Checking for new heinlein rules"
 # Hash current SA rules
-if [ ! -f /etc/rspamd/custom/sa-rules ]; then
-  HASH_SA_RULES=0
+if [ ! -f /etc/rspamd/custom/etag ]
+then
+  ETAG_SA_RULES=0
 else
-  HASH_SA_RULES=$(md5sum /etc/rspamd/custom/sa-rules | cut -d' ' -f1)
+  ETAG_SA_RULES=$(cat /etc/rspamd/custom/etag)
 fi
 
 # Deploy
-url="http://www.spamassassin.heinlein-support.de/$(drill 1.4.3.spamassassin.heinlein-support.de txt | grep ^1.4.3.spamassassin.heinlein-support.de | cut -d\" -f2).tar.gz"
-echo "Updating from $url"
-wget "$url" -O /tmp/sa-rules-heinlein.tar.gz
-if gzip -t /tmp/sa-rules-heinlein.tar.gz; then
-  tar xfvz /tmp/sa-rules-heinlein.tar.gz -C /tmp/sa-rules-heinlein
-  cat /tmp/sa-rules-heinlein/*cf > /etc/rspamd/custom/sa-rules
-fi
+b_url="1.4.3.spamassassin.heinlein-support.de"
+url="http://www.spamassassin.heinlein-support.de/$(drill $b_url txt | grep ^$b_url | cut -d\" -f2).tar.gz"
+REMOTE_ETAG=$(wget -S --spider "$url" 2>&1 | grep ETag: | cut -d\" -f2)
 
-sed -i -e 's/\([^\\]\)\$\([^\/]\)/\1\\$\2/g' /etc/rspamd/custom/sa-rules
+if [ "$ETAG_SA_RULES" != "$REMOTE_ETAG" ]
+then
+  echo "Updating from $url"
+  echo "$REMOTE_ETAG" > /etc/rspamd/custom/etag
+  wget "$url" -O /tmp/sa-rules-heinlein.tar.gz
+  if gzip -t /tmp/sa-rules-heinlein.tar.gz
+  then
+    tar xfvz /tmp/sa-rules-heinlein.tar.gz -C /tmp/sa-rules-heinlein
+    cat /tmp/sa-rules-heinlein/*cf > /etc/rspamd/custom/sa-rules
+  fi
 
-# restart rspamd with SIGHUP if hash changed
-if [ "$(md5sum /etc/rspamd/custom/sa-rules | cut -d' ' -f1)" != "${HASH_SA_RULES}" ]; then
+  sed -i -e 's/\([^\\]\)\$\([^\/]\)/\1\\$\2/g' /etc/rspamd/custom/sa-rules
+
+# restart rspamd with SIGHUP
   echo "Restarting rspamd"
   killall -SIGHUP rspamd || true
-fi
 
 # Cleanup
-rm -rf /tmp/sa-rules-heinlein /tmp/sa-rules-heinlein.tar.gz
+  rm -rf /tmp/sa-rules-heinlein/* /tmp/sa-rules-heinlein.tar.gz
 
-echo "Heinlein rules updated"
+  echo "Heinlein rules updated"
+else
+  echo "Heinlein rules already up to date"
+fi

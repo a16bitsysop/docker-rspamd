@@ -8,7 +8,7 @@ set -e
 [ ! -d /tmp/sa-rules-heinlein ] && mkdir -p /tmp/sa-rules-heinlein
 
 echo "Checking for new heinlein rules"
-# Hash current SA rules
+# Read etag for current SA rules
 if [ ! -f /etc/rspamd/custom/etag ]
 then
   ETAG_SA_RULES=0

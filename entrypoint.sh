@@ -39,7 +39,7 @@ wait_clam() {
     sleep 10
   done
 # reload rspamd with SIGHUP so finds clamav
-  echo "Restarting rspamd for clamav"
+  echo "Reloading rspamd for clamav"
   kill -SIGHUP $(pgrep -o rspamd) || true
 }
 

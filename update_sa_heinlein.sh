@@ -36,7 +36,7 @@ then
 
 # reloading rspamd configuration with SIGHUP
   echo "Reloading rspamd configuration"
-  kill -SIGHUP $(pgrep -o rspamd) || true
+  kill -SIGHUP "$(pgrep -o rspamd)" || true
 
 # Cleanup
   rm -rf /tmp/sa-rules-heinlein/* /tmp/sa-rules-heinlein.tar.gz

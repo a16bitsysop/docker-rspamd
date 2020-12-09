@@ -1,4 +1,5 @@
 #!/bin/ash
+# shellcheck shell=dash
 #display environment variables passed with --env
 echo "\$REDIS= $REDIS"
 echo "\$CLAMAV= $CLAMAV"

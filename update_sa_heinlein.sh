@@ -34,9 +34,9 @@ then
 
   sed -i -e 's/\([^\\]\)\$\([^\/]\)/\1\\$\2/g' /etc/rspamd/custom/sa-rules
 
-# restart rspamd with SIGHUP
-  echo "Restarting rspamd"
-  killall -SIGHUP rspamd || true
+# reloading rspamd configuration with SIGHUP
+  echo "Reloading rspamd configuration"
+  kill -SIGHUP $(pgrep -o rspamd) || true
 
 # Cleanup
   rm -rf /tmp/sa-rules-heinlein/* /tmp/sa-rules-heinlein.tar.gz

@@ -14,8 +14,9 @@ echo "\$SYSREDIR= $SYSREDIR"
 echo
 
 wait_port() {
-  TL=0
-  [ -n "$4" ] && INC="$4" || INC="3"
+  local TL=0
+  local INC=3
+  [ -n "$4" ] && INC="$4"
   echo "Waiting for $1"
   while true
   do
@@ -28,15 +29,15 @@ wait_port() {
 }
 
 wait_clam() {
-  TL=0
-  INC=10
+  local TL=0
+  local INC=10
   echo "Waiting for clamav"
   while true
   do
     nc -zv "$CLAMAV" 3310 && break
     TL=$((TL + INC))
     [ "$TL" -gt 360 ] && return 1
-    sleep 10
+    sleep "$INC"
   done
 # reload rspamd with SIGHUP so finds clamav
   echo "Reloading rspamd for clamav"

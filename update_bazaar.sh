@@ -16,7 +16,7 @@ do
   then
     wget -O hash.zip "$url"
     unzip hash.zip
-    cp -f full_md5.txt /etc/rspamd/local.d/maps.d/abuse_bazaar_full.txt
+    cp -f full_md5.txt /etc/rspamd/custom/abuse_bazaar_full.txt
     rm -rf ./*
     LOCAL_ETAG="$REMOTE_ETAG"
   else

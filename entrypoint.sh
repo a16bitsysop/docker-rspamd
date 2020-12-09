@@ -17,7 +17,7 @@ wait_port() {
   TL=0
   [ -n "$4" ] && INC="$4" || INC="3"
   echo "Waiting for $1"
-  while :
+  while true
   do
     nc -zv "$2" "$3" && return
     echo "."
@@ -25,6 +25,22 @@ wait_port() {
     [ "$TL" -gt 90 ] && return 1
     sleep "$INC"
   done
+}
+
+wait_clam() {
+  TL=0
+  INC=10
+  echo "Waiting for clamav"
+  while true
+  do
+    nc -zv "$CLAMAV" 3310 && break
+    TL=$((TL + INC))
+    [ "$TL" -gt 360 ] && return 1
+    sleep 10
+  done
+# reload rspamd with SIGHUP so finds clamav
+  echo "Restarting rspamd for clamav"
+  kill -SIGHUP $(pgrep -o rspamd) || true
 }
 
 NME=rspamd
@@ -75,7 +91,14 @@ then
   sed -r "s+(.*_servers.*=).*+\1 \"$REDIS\";+" -i redis.conf
   wait_port "redis" "$REDIS" 6379
 # let redis load database into memory
-  sleep 60s
+  sleep 30s
+fi
+
+# make custom folder for frequently downloaded files
+if [ -n "$BZSLEEP" ] || [ -n "$HLSLEEP" ]
+then
+  [ ! -d /etc/rspamd/custom ] && mkdir /etc/rspamd/custom
+  chown rspamd:rspamd /etc/rspamd/custom
 fi
 
 # start update abuse.ch malware bazaar hashes
@@ -85,9 +108,8 @@ fi
 if [ -n "$HLSLEEP" ]
 then
   echo 'ruleset = "/etc/rspamd/custom/sa-rules";' > spamassassin.conf
-  mkdir /etc/rspamd/custom/
-  /usr/local/bin/update_sa_heinlein.sh
-  /usr/local/bin/update_sa_heinlein_daemon.sh &
+  su rspamd -s /bin/sh -c "/usr/local/bin/update_sa_heinlein.sh"
+  su rspamd -s /bin/sh -c "/usr/local/bin/update_sa_heinlein_daemon.sh" &
 else
   rm -f spamassassin.conf
 fi
@@ -105,6 +127,7 @@ clamav {
   }
 }
 " > antivirus.conf
+wait_clam &
 fi
 
 if [ -n "$DCCIFD" ]
@@ -166,4 +189,4 @@ fi
 
 [ -f /usr/sbin/rspamd ] && s="s"
 
-/usr/"$s"bin/rspamd -f -u rspamd -g rspamd
+su rspamd -s /bin/sh -c "/usr/${s}bin/rspamd -f"

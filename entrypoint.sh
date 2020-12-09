@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 #display environment variables passed with --env
 echo "\$REDIS= $REDIS"
 echo "\$CLAMAV= $CLAMAV"

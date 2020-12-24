@@ -189,6 +189,4 @@ then
   sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" ./*.conf
 fi
 
-[ -f /usr/sbin/rspamd ] && s="s"
-
-su rspamd -s /bin/sh -c "/usr/${s}bin/rspamd -f"
+su rspamd -s /bin/sh -c "/usr/sbin/rspamd -f"

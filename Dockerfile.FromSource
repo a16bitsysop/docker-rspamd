@@ -35,26 +35,44 @@ COPY *.patch ./
 
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
 # hadolint ignore=DL3018
-RUN apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill
+RUN apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \
+	boost pcre
 # hadolint ignore=DL3018,DL3003
 RUN apk add --no-cache --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \
+	boost-dev pcre-dev sqlite-dev py3-breathe chrpath git \
 && addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
-&& wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
+&& git clone https://github.com/VectorCamp/hyperscan.git \
+&& cd hyperscan \
+&& git checkout develop \
+&& cmake -B build \
+                -DCMAKE_INSTALL_PREFIX=/usr \
+                -DCMAKE_INSTALL_LIBDIR=lib \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DBUILD_STATIC_AND_SHARED=ON \
+                . \
+&& cmake --build build --target all \
+&& cmake --build build --target install \
+&& cd ..
+
+RUN wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
 && tar -xzf ${pkgver}.tar.gz \
 && rm ${pkgver}.tar.gz \
 && cd rspamd-* \
 && patch -p1 -i /tmp/10-control_socket.patch \
+&& patch -p1 -i /tmp/hyperscan.patch \
 && cmake -B build \
                 -DCMAKE_INSTALL_PREFIX=/usr \
                 -DCONFDIR=/etc/rspamd \
                 -DRUNDIR=/run/rspamd \
 		-DENABLE_PCRE2=ON \
+		-DENABLE_HYPERSCAN=ON \
 #		-DENABLE_JEMALLOC=ON \
 && make -C build && make -C build install \
 && cd /usr/bin \
-#&& for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
+&& for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
+&& mv rspamd ../sbin/ \
 && cd /tmp \
 && wget https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
@@ -65,7 +83,7 @@ RUN apk add --no-cache --virtual .build-deps \
 && mkdir /etc/rspamd/override.d
 
 WORKDIR /usr/local/bin
-COPY entrypoint.sh ./
+COPY travis-helpers/set-timezone.sh entrypoint.sh update_bazaar.sh update_sa_heinlein.sh update_sa_heinlein_daemon.sh ./
 
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./

@@ -53,8 +53,7 @@ RUN apk add --no-cache --virtual .build-deps \
                 -DBUILD_STATIC_AND_SHARED=ON \
                 . \
 && cmake --build build --target all \
-&& cmake --build build --target install \
-&& cd ..
+&& cmake --build build --target install
 
 RUN wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
 && tar -xzf ${pkgver}.tar.gz \

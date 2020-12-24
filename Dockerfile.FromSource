@@ -55,6 +55,7 @@ RUN apk add --no-cache --virtual .build-deps \
 && cmake --build build --target all \
 && cmake --build build --target install
 
+# hadolint ignore=DL3003
 RUN wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
 && tar -xzf ${pkgver}.tar.gz \
 && rm ${pkgver}.tar.gz \

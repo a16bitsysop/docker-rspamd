@@ -57,10 +57,10 @@ COPY --from=hyper-build /usr/lib/pkgconfig/libhs.pc /usr/lib/pkgconfig/
 
 #RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
 # hadolint ignore=DL3018,DL3003
-RUN apk --no-cache --upgrade add --virtual build-deps \
+RUN apk --no-cache --upgrade add --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \
-&& apk --no-cache --upgrade add --virtual run-deps glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \
+&& apk --no-cache --upgrade add --virtual .run-deps glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \
 	boost pcre \
 && addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
 &&  wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
@@ -86,7 +86,7 @@ RUN apk --no-cache --upgrade add --virtual build-deps \
 && tar -xzf ${dqsver}.tar.gz \
 && mv rspamd-dqs-*/2.x /etc/rspamd/rspamd-dqs \
 && rm -Rf ./* \
-&& apk del build-deps \
+&& apk del .build-deps \
 #&& rm /usr/lib/libjemalloc_pic.a && rm -Rf /usr/include/jemalloc
 && mkdir /etc/rspamd/override.d
 

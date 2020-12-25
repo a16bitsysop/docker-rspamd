@@ -60,7 +60,7 @@ COPY --from=hyper-build /usr/lib/pkgconfig/libhs.pc /usr/lib/pkgconfig/
 RUN apk --no-cache --upgrade add --virtual build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \
-&& apk --no-cache --upgrade add glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \
+&& apk --no-cache --upgrade add --virtual run-deps glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \
 	boost pcre \
 && addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
 &&  wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \

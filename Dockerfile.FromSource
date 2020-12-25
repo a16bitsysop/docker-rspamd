@@ -22,6 +22,24 @@
 #	--with-lg-hugepage=21 \
 #&&	make build_lib && make install_include install_lib
 
+FROM alpine:3.12 AS hyper-build
+ENV pkgver=5.3.1
+
+WORKDIR /tmp
+RUN apk add --no-cache build-base cmake ragel boost-dev pcre-dev sqlite-dev \ 
+&& wget https://github.com/VectorCamp/hyperscan/archive/v${pkgver}.tar.gz \
+&& tar -xzf v${pkgver}.tar.gz \
+&& rm v${pkgver}.tar.gz \
+&& cd hyperscan-* \
+&& cmake -B build \
+	-DCMAKE_INSTALL_PREFIX=/usr \
+	-DCMAKE_INSTALL_LIBDIR=lib \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DBUILD_STATIC_AND_SHARED=ON \
+	. \
+&& cmake --build build --target all \
+&& cmake --build build --target install
+
 FROM alpine:3.12
 LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 
@@ -32,36 +50,25 @@ WORKDIR /tmp
 COPY *.patch ./
 #COPY --from=jem-build /usr/lib/libjemalloc_pic.a /usr/lib/
 #COPY --from=jem-build /usr/include/jemalloc/jemalloc.h /usr/include/jemalloc/
+COPY --from=hyper-build /usr/lib/libhs* /usr/lib/
+COPY --from=hyper-build /usr/include/hs /usr/include/
+COPY --from=hyper-build /usr/lib/pkgconfig/libhs.pc /usr/lib/pkgconfig/
 
-RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
-# hadolint ignore=DL3018
-RUN apk add --no-cache glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \
-	boost pcre
+#RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
 # hadolint ignore=DL3018,DL3003
-RUN apk add --no-cache --virtual .build-deps \
+RUN apk add --no-cache --upgrade --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \
-	boost-dev pcre-dev sqlite-dev py3-breathe chrpath git \
+&& apk add --no-cache --upgrade glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \
+	boost pcre \
 && addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
-&& git clone https://github.com/VectorCamp/hyperscan.git \
-&& cd hyperscan \
-&& git checkout develop \
-&& cmake -B build \
-                -DCMAKE_INSTALL_PREFIX=/usr \
-                -DCMAKE_INSTALL_LIBDIR=lib \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DBUILD_STATIC_AND_SHARED=ON \
-                . \
-&& cmake --build build --target all \
-&& cmake --build build --target install
-
-# hadolint ignore=DL3003
-RUN wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
+&&  wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
 && tar -xzf ${pkgver}.tar.gz \
 && rm ${pkgver}.tar.gz \
 && cd rspamd-* \
 && patch -p1 -i /tmp/10-control_socket.patch \
 && patch -p1 -i /tmp/hyperscan.patch \
+&& echo "Building" \
 && cmake -B build \
                 -DCMAKE_INSTALL_PREFIX=/usr \
                 -DCONFDIR=/etc/rspamd \

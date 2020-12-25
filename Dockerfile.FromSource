@@ -56,7 +56,7 @@ COPY --from=hyper-build /usr/lib/pkgconfig/libhs.pc /usr/lib/pkgconfig/
 
 #RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
 # hadolint ignore=DL3018,DL3003
-RUN apk add --virtual .build-deps --no-cache --upgrade \
+RUN apk --no-cache --upgrade add --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \
 && apk add --no-cache --upgrade glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \

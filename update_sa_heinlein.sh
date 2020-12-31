@@ -9,11 +9,11 @@ set -e
 
 echo "Checking for new heinlein rules"
 # Read etag for current SA rules
-if [ ! -f /etc/rspamd/custom/etag ]
+if [ ! -f /etc/rspamd/custom/heinlein.etag ]
 then
   ETAG_SA_RULES=0
 else
-  ETAG_SA_RULES=$(cat /etc/rspamd/custom/etag)
+  ETAG_SA_RULES=$(cat /etc/rspamd/custom/heinlein.etag)
 fi
 
 # Deploy
@@ -24,7 +24,7 @@ REMOTE_ETAG=$(wget -S --spider "$url" 2>&1 | grep ETag: | cut -d\" -f2)
 if [ "$ETAG_SA_RULES" != "$REMOTE_ETAG" ]
 then
   echo "Updating from $url"
-  echo "$REMOTE_ETAG" > /etc/rspamd/custom/etag
+  echo "$REMOTE_ETAG" > /etc/rspamd/custom/heinlein.etag
   wget "$url" -O /tmp/sa-rules-heinlein.tar.gz
   if gzip -t /tmp/sa-rules-heinlein.tar.gz
   then

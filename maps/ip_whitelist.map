@@ -1,3 +1,3 @@
 # one IP per line
-#allow mail command etc to work
-127.0.0.1
+#allow mail command etc to work if rejected but stops dkim_signing
+#127.0.0.1

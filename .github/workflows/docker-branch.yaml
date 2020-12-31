@@ -1,12 +1,30 @@
 name: Docker-Build-Push
 
 # Run this workflow every time a new commit pushed to docker-build branch
-on: 
+on:
   push:
     branches:
       - docker-build
+  workflow_dispatch:
+    inputs:
+      deployEnvironment:
+        description: 'Deployment Environment'
+        required: true
+        default: 'dev'
+      logLevel:
+        description: 'The Logging Level'
+        required: false
+        default: 'low'
 
 jobs:
+  #allow editing of manual running parameters
+  printInputs:
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo "Deploy Environment: ${{ github.event.inputs.deployEnvironment }}"
+        echo "Log Level: ${{ github.event.inputs.logLevel }}"
+
   # Set the job key. The key is displayed as the job name
   # when a job name is not provided
   super-lint:

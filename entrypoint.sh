@@ -48,7 +48,7 @@ wait_clam() {
 NME=rspamd
 set-timezone.sh "$NME"
 
-chown rspamd:rspamd /var/lib/rspamd
+chown -R rspamd:rspamd /var/lib/rspamd
 cd /etc/rspamd/local.d || exit 1
 
 if [ -n "$SYSREDIR" ]
@@ -189,6 +189,4 @@ then
   sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" ./*.conf
 fi
 
-[ -f /usr/sbin/rspamd ] && s="s"
-
-su rspamd -s /bin/sh -c "/usr/${s}bin/rspamd -f"
+su rspamd -s /bin/sh -c "/usr/sbin/rspamd -f"

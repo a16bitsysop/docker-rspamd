@@ -48,7 +48,7 @@ wait_clam() {
 NME=rspamd
 set-timezone.sh "$NME"
 
-chown rspamd:rspamd /var/lib/rspamd
+chown -R rspamd:rspamd /var/lib/rspamd
 cd /etc/rspamd/local.d || exit 1
 
 if [ -n "$SYSREDIR" ]

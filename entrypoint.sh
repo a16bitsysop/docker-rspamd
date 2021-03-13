@@ -12,6 +12,7 @@ echo "\$NOGREY= $NOGREY"
 echo "\$BZSLEEP= $BZSLEEP"
 echo "\$HLSLEEP= $HLSLEEP"
 echo "\$SYSREDIR= $SYSREDIR"
+echo "\$STUNNEL= $STUNNEL"
 echo
 
 wait_port() {
@@ -88,12 +89,19 @@ do
 done
 rm -f rspamd.local.lua
 
+if [ -n "$STUNNEL" ]
+then
+        sed -r "s/(connect =\s).*:/\1$REDIS:/" -i /etc/stunnel/stunnel.conf
+        stunnel /etc/stunnel/stunnel.conf
+        REDIS="127.0.0.1"
+fi
+
 if [ -n "$REDIS" ]
 then
   sed -r "s+(.*_servers.*=).*+\1 \"$REDIS\";+" -i redis.conf
   wait_port "redis" "$REDIS" 6379
 # let redis load database into memory
-  sleep 30s
+  sleep 45s
 fi
 
 # make custom folder for frequently downloaded files
@@ -189,4 +197,9 @@ then
   sed -i -e "s+your_DQS_key+$(cat /etc/rspamd/rspamd-dqs/dqs-key)+g" ./*.conf
 fi
 
+if [ ! -f /var/lib/rspamd/effective_tld_names.dat ]
+then
+  cp /usr/share/rspamd/effective_tld_names.dat /var/lib/rspamd/
+  chown rspamd:rspamd /var/lib/rspamd/effective_tld_names.dat
+fi
 su rspamd -s /bin/sh -c "/usr/sbin/rspamd -f"

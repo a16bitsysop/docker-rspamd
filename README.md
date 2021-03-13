@@ -45,25 +45,30 @@ is configured to read domain names from local.d/maps.d/redirectors.inc
 This can be copied from the main rspamd config into local.d/maps.d if SYSREDIR
 is set, it will not overrite redirectors.inc if it is already in local.d/maps.d
 
+If the STUNNEL environment variable is set then stunnel will be started to pass
+redis commands over a ssl/tls tunnel.  There needs to be a stunnel server at the
+other end to receive the connection, it is different from redis native ssl support.
+
 ## Github
 Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)
 
 ## Environment Variables
 
-| NAME      | Description                                            | Default            |
-| --------- | ------------------------------------------------------ | ------------------ |
-| REDIS     | name/container name or IP of the redis server.         | none (No redis)    |
-| OLEFY     | name/container name or IP of the Olefy server.         | do not use Olefy   |
-| RAZORFY   | name/container name or IP of the Razorfy server.       | do not use Razorfy |
-| DCCIFD    | name/container name or IP of the DCCIFD server.        | do not use dccifd  |
-| CLAMAV    | name/container name or IP of the ClamAV server.        | do not use ClamAV  |
-| CONTROLIP | name/container name or IP of rspamc process.           | none               |
-| DNSSEC    | enable dnssec for dns lookups.                         | no dnssec          |
-| NOGREY    | disable greylisting (soft reject).                     | greylist           |
-| BZSLEEP   | hours between updates of abuse.ch hashes eg 1.5        | unset / disabled   |
-| HLSLEEP   | hours between updates of heinleins spamassassin rules  | unset / disabled   |
-| SYSREDIR  | copy rsypamd redirectors.inc for url_redirector to use | unset / don't copy |
-| TIMEZONE  | timezone to use inside the container, eg Europe/London | unset              |
+| NAME      | Description                                              | Default            |
+| --------- | -------------------------------------------------------- | ------------------ |
+| REDIS     | name/container name or IP of the redis server.           | none (No redis)    |
+| OLEFY     | name/container name or IP of the Olefy server.           | do not use Olefy   |
+| RAZORFY   | name/container name or IP of the Razorfy server.         | do not use Razorfy |
+| DCCIFD    | name/container name or IP of the DCCIFD server.          | do not use dccifd  |
+| CLAMAV    | name/container name or IP of the ClamAV server.          | do not use ClamAV  |
+| CONTROLIP | name/container name or IP of rspamc process.             | none               |
+| DNSSEC    | enable dnssec for dns lookups.                           | no dnssec          |
+| NOGREY    | disable greylisting (soft reject).                       | greylist           |
+| BZSLEEP   | hours between updates of abuse.ch hashes eg 1.5          | unset / disabled   |
+| HLSLEEP   | hours between updates of heinleins spamassassin rules    | unset / disabled   |
+| SYSREDIR  | copy rsypamd redirectors.inc for url_redirector to use   | unset / don't copy |
+| STUNNEL   | Use stunnel to encrypt redis traffic on port 6379 if set | unset              |
+| TIMEZONE  | timezone to use inside the container, eg Europe/London   | unset              |
 
 ## Examples
 To run connecting to container network without exposing ports (accessible from host network), and docker managed volumes

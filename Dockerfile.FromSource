@@ -22,53 +22,58 @@
 #	--with-lg-hugepage=21 \
 #&&	make build_lib && make install_include install_lib
 
-FROM alpine:3.12 AS hyper-build
-ENV pkgver=5.3.1
+#FROM alpine:3.12 AS hyper-build
+#ENV pkgver=5.3.1
 
-WORKDIR /tmp
+#WORKDIR /tmp
 # hadolint ignore=DL3018,DL3003
-RUN apk add --no-cache build-base cmake ragel boost-dev pcre-dev sqlite-dev \ 
-&& wget https://github.com/VectorCamp/hyperscan/archive/v${pkgver}.tar.gz \
-&& tar -xzf v${pkgver}.tar.gz \
-&& rm v${pkgver}.tar.gz \
-&& cd hyperscan-* \
-&& cmake -B build \
-	-DCMAKE_INSTALL_PREFIX=/usr \
-	-DCMAKE_INSTALL_LIBDIR=lib \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DBUILD_STATIC_AND_SHARED=ON \
-	. \
-&& cmake --build build --target all \
-&& cmake --build build --target install
+#RUN apk add --no-cache build-base cmake ragel boost-dev pcre-dev sqlite-dev \ 
+#&& wget https://github.com/VectorCamp/hyperscan/archive/v${pkgver}.tar.gz \
+#&& tar -xzf v${pkgver}.tar.gz \
+#&& rm v${pkgver}.tar.gz \
+#&& cd hyperscan-* \
+#&& cmake -B build \
+#	-DCMAKE_INSTALL_PREFIX=/usr \
+#	-DCMAKE_INSTALL_LIBDIR=lib \
+#	-DCMAKE_BUILD_TYPE=Release \
+#	-DBUILD_STATIC_AND_SHARED=ON \
+#	. \
+#&& cmake --build build --target all \
+#&& cmake --build build --target install
 
-FROM alpine:3.12
+FROM alpine:edge
 LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 
 ENV dqsver master
 #ENV pkgver master
-ENV pkgver 2.6
+ENV pkgver 2.7
 WORKDIR /tmp
-COPY *.patch ./
 #COPY --from=jem-build /usr/lib/libjemalloc_pic.a /usr/lib/
 #COPY --from=jem-build /usr/include/jemalloc/jemalloc.h /usr/include/jemalloc/
-COPY --from=hyper-build /usr/lib/libhs* /usr/lib/
-COPY --from=hyper-build /usr/include/hs /usr/include/
-COPY --from=hyper-build /usr/lib/pkgconfig/libhs.pc /usr/lib/pkgconfig/
+#COPY --from=hyper-build /usr/lib/libhs* /usr/lib/
+#COPY --from=hyper-build /usr/include/hs /usr/include/
+#COPY --from=hyper-build /usr/lib/pkgconfig/libhs.pc /usr/lib/pkgconfig/
 
 #RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
 # hadolint ignore=DL3018,DL3003
 RUN apk --no-cache --upgrade add --virtual .build-deps \
 	build-base perl cmake ragel binutils \
 	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \
-&& apk --no-cache --upgrade add --virtual .run-deps glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill \
+	hyperscan-dev \
+&& apk --no-cache --upgrade add --virtual .run-deps glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill hyperscan \
 	boost pcre \
 && addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
-&&  wget https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
+&& wget -q https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
 && tar -xzf ${pkgver}.tar.gz \
-&& rm ${pkgver}.tar.gz \
-&& cd rspamd-* \
+&& rm ${pkgver}.tar.gz
+
+COPY *.patch ./
+RUN cd rspamd-* \
 && patch -p1 -i /tmp/10-control_socket.patch \
-&& patch -p1 -i /tmp/hyperscan.patch \
+&& patch -p1 -i /tmp/ev-warning.patch \
+#&& patch -p1 -i /tmp/rspamd-static.patch \
+#&& patch -p1 -i /tmp/errors.patch \
+#&& patch -p1 -i /tmp/rspamd-errors.patch \
 && echo "Building" \
 && cmake -B build \
                 -DCMAKE_INSTALL_PREFIX=/usr \
@@ -76,13 +81,14 @@ RUN apk --no-cache --upgrade add --virtual .build-deps \
                 -DRUNDIR=/run/rspamd \
 		-DENABLE_PCRE2=ON \
 		-DENABLE_HYPERSCAN=ON \
+		-DSTATIC_AND_SHARED=ON \
 #		-DENABLE_JEMALLOC=ON \
 && make -C build && make -C build install \
 && cd /usr/bin \
 && for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
 && mv rspamd ../sbin/ \
 && cd /tmp \
-&& wget https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
+&& wget -q https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
 && mv rspamd-dqs-*/2.x /etc/rspamd/rspamd-dqs \
 && rm -Rf ./* \

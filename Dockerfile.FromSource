@@ -69,8 +69,7 @@ RUN apk --no-cache --upgrade add --virtual .build-deps \
 
 WORKDIR /tmp/rspamd
 COPY *.patch ./
-RUN cd rspamd-* \
-&& patch -p1 -i ./10-control_socket.patch \
+RUN patch -p1 -i ./10-control_socket.patch \
 && patch -p1 -i ./ev-warning.patch \
 #&& patch -p1 -i ./rspamd-static.patch \
 #&& patch -p1 -i ./errors.patch \

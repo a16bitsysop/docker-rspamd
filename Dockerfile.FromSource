@@ -64,16 +64,17 @@ RUN apk --no-cache --upgrade add --virtual .build-deps \
 	boost pcre \
 && addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
 && wget -q https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
-&& tar -xzf ${pkgver}.tar.gz \
+&& tar -xzf ${pkgver}.tar.gz -C /tmp/rspamd \
 && rm ${pkgver}.tar.gz
 
+WORKDIR /tmp/rspamd
 COPY *.patch ./
 RUN cd rspamd-* \
-&& patch -p1 -i /tmp/10-control_socket.patch \
-&& patch -p1 -i /tmp/ev-warning.patch \
-#&& patch -p1 -i /tmp/rspamd-static.patch \
-#&& patch -p1 -i /tmp/errors.patch \
-#&& patch -p1 -i /tmp/rspamd-errors.patch \
+&& patch -p1 -i ./10-control_socket.patch \
+&& patch -p1 -i ./ev-warning.patch \
+#&& patch -p1 -i ./rspamd-static.patch \
+#&& patch -p1 -i ./errors.patch \
+#&& patch -p1 -i ./rspamd-errors.patch \
 && echo "Building" \
 && cmake -B build \
                 -DCMAKE_INSTALL_PREFIX=/usr \

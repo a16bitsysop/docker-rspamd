@@ -70,7 +70,7 @@ RUN apk --no-cache --upgrade add --virtual .build-deps \
 WORKDIR /tmp/rspamd
 COPY *.patch ./
 RUN patch -p1 -i ./10-control_socket.patch \
-&& patch -p1 -i ./ev-warning.patch \
+#&& patch -p1 -i ./ev-warning.patch \
 #&& patch -p1 -i ./rspamd-static.patch \
 #&& patch -p1 -i ./errors.patch \
 #&& patch -p1 -i ./rspamd-errors.patch \
@@ -83,12 +83,14 @@ RUN patch -p1 -i ./10-control_socket.patch \
 		-DENABLE_HYPERSCAN=ON \
 		-DSTATIC_AND_SHARED=ON \
 #		-DENABLE_JEMALLOC=ON \
-&& make -C build && make -C build install \
-&& cd /usr/bin \
-&& for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
+&& make -C build && make -C build install
+
+WORKDIR /usr/bin
+RUN for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
 && mv rspamd ../sbin/ \
-&& cd /tmp \
-&& wget -q https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
+
+WORKDIR /tmp
+RUN wget -q https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
 && mv rspamd-dqs-*/2.x /etc/rspamd/rspamd-dqs \
 && rm -Rf ./* \

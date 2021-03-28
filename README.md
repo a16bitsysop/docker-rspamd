@@ -48,6 +48,8 @@ is set, it will not overrite redirectors.inc if it is already in local.d/maps.d
 If the STUNNEL environment variable is set then stunnel will be started to pass
 redis commands over a ssl/tls tunnel.  There needs to be a stunnel server at the
 other end to receive the connection, it is different from redis native ssl support.
+There should also be a file /etc/stunnel/psk.txt with the pre shared key, see
+[here](https://www.stunnel.org/auth.html).
 
 ## Github
 Github Repository: [https://github.com/a16bitsysop/docker-rspamd](https://github.com/a16bitsysop/docker-rspamd)

@@ -68,7 +68,7 @@ cd maps.orig || exit 1
 MAPS=$(find ./ -name '*.map')
 cd .. || exit 1
 
-for m in ${MAPS};
+for m in ${MAPS}
 do
   echo "Checking $m"
   if [ ! -f maps.d/"$m" ]
@@ -107,8 +107,8 @@ then
   do
     sleep 5s
     _reply=$(echo "PING" | nc "$REDIS" 6379)
-    echo "$_reply"
     echo "$_reply" | grep "PONG" && _ready="1"
+    [ -z "$_ready" ] && echo "$_reply"
   done
 fi
 

@@ -101,14 +101,14 @@ then
   sed -r "s+(.*_servers.*=).*+\1 \"$REDIS\";+" -i redis.conf
   wait_port "redis" "$REDIS" 6379
 # check redis has loaded database into memory
-  sleep 5s
   echo "Waiting for redis to load database"
   _ready=""
   while [ -z "$_ready" ]
   do
+    sleep 5s
     _reply=$(echo "PING" | nc "$REDIS" 6379)
     echo "$_reply"
-    echo "$_reply" | grep "PONG" && _ready="1" || sleep 5s
+    echo "$_reply" | grep "PONG" && _ready="1"
   done
 fi
 

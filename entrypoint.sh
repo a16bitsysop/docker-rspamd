@@ -100,8 +100,16 @@ if [ -n "$REDIS" ]
 then
   sed -r "s+(.*_servers.*=).*+\1 \"$REDIS\";+" -i redis.conf
   wait_port "redis" "$REDIS" 6379
-# let redis load database into memory
-  sleep 45s
+# check redis has loaded database into memory
+  sleep 5s
+  echo "Waiting for redis to load database"
+  _ready=""
+  while [ -z "$_ready" ]
+  do
+    _reply=$(echo "PING" | nc "$REDIS" 6379)
+    echo "$_reply"
+    echo "$_reply" | grep "PONG" && _ready="1" || sleep 5s
+  done
 fi
 
 # make custom folder for frequently downloaded files

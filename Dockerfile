@@ -22,6 +22,12 @@ COPY local.conf ./
 WORKDIR /etc/rspamd/local.d/maps.orig
 COPY --chown=rspamd:rspamd maps/* ./
 
+WORKDIR /usr/share/rspamd/plugins
+COPY footer.lua ./
+
+WORKDIR /etc/rspamd/modules.d
+COPY footer.conf ./
+
 COPY stunnel.conf /etc/stunnel/stunnel.conf
 
 CMD [ "entrypoint.sh" ]

@@ -67,6 +67,7 @@ RUN for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
 && mv rspamd ../sbin/ \
 
 WORKDIR /tmp
+# hadolint ignore=DL3059
 RUN wget -q https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
 && mv rspamd-dqs-*/2.x /etc/rspamd/rspamd-dqs \

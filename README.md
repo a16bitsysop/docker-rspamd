@@ -3,8 +3,8 @@ Dockerfile to run [rspamd](https://rspamd.com/) as a docker container, worker-pr
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/a16bitsysop/rspamd.svg?style=plastic)](https://hub.docker.com/r/a16bitsysop/rspamd/)
 [![Docker Stars](https://img.shields.io/docker/stars/a16bitsysop/rspamd.svg?style=plastic)](https://hub.docker.com/r/a16bitsysop/rspamd/)
-[![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/a16bitsysop/rspamd/latest?style=plastic)
-[![Github SHA](https://img.shields.io/badge/dynamic/json?style=plastic&color=orange&label=Github%20SHA&query=object.sha&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fa16bitsysop%2Fdocker-rspamd%2Fgit%2Frefs%2Fheads%2Fmain)
+[![Docker Image Version (tag latest semver)](https://img.shields.io/docker/v/a16bitsysop/rspamd/latest?style=plastic)]
+[![Github SHA](https://img.shields.io/badge/dynamic/json?style=plastic&color=orange&label=Github%20SHA&query=object.sha&url=https%3A%2F%2Fapi.github.com%2Frepos%2Fa16bitsysop%2Fdocker-rspamd%2Fgit%2Frefs%2Fheads%2Fmain)]
 [![GitHub Super-Linter](https://github.com/a16bitsysop/docker-rspamd/workflows/Super-Linter/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 It has several map files which can be edited in the web UI, including filename for extensions to reject and whitelist for domains to whitelist.  The maps are stored in /etc/rspamd/local.d/maps.d , they are also copied from maps.orig to maps.d if not present during startup for a container with mounted volumes or new maps in a newer image.

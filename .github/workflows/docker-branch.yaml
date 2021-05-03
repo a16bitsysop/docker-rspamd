@@ -180,15 +180,6 @@ jobs:
             org.label-schema.version=${{ steps.docklabel.outputs.apk_ver }}
             org.label-schema.description=${{ steps.docklabel.outputs.desc }}
             alpine-version=${{ steps.docklabel.outputs.alp_ver }}
-      -
-        name: Update Microbadger Badges
-        run: |
-          if [ -z ${{ secrets.WEBHOOK }} ]; then
-            echo "\$WEBHOOK not set"
-          else
-            echo "Triggering Microbadger \$WEBHOOK"
-            curl -X POST "https://hooks.microbadger.com/images/$IMAGE_NAME/${{ secrets.WEBHOOK }}"
-          fi
     env:
       PLATS: linux/386,linux/amd64,linux/ppc64le,linux/s390x,linux/arm/v7,linux/arm64
       IMAGE_NAME: a16bitsysop/rspamd

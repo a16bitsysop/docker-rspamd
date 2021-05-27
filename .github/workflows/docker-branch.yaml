@@ -126,7 +126,7 @@ jobs:
           echo "::set-output name=repo::$GITHUB_REPOSITORY"
       -
         name: Set up QEMU
-        uses: docker/setup-qemu-action@v1.1.0
+        uses: docker/setup-qemu-action@v1.2.0
         with:
           platforms: ${{ steps.docklabel.outputs.plats }}
       -

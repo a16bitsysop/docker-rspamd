@@ -26,7 +26,9 @@ RUN cp /etc/apk/repositories /etc/apk/repositories.orig \
 && echo '/tmp/packages' >> /etc/apk/repositories \
 && chown -R root:root /tmp/packages
 
-RUN apk add --no-cache --allow-untrusted -u rspamd rspamd-controller rspamd-fuzzy rspamd-proxy drill stunnel
+RUN apk add --no-cache --allow-untrusted -u rspamd rspamd-controller rspamd-fuzzy rspamd-proxy drill stunnel \
+&& mkdir /run/rspamd && chown rspamd:rspamd /run/rspamd \
+&& mkdir /run/stunnel && chown stunnel:stunnel /run/stunnel
 
 ENV dqsver master
 ENV pkgver 2.7

@@ -1,0 +1,66 @@
+diff -Nurp a/APKBUILD b/APKBUILD
+--- a/APKBUILD	2021-05-31 13:03:51.873547100 +0100
++++ b/APKBUILD	2021-06-05 19:22:51.218795566 +0100
+@@ -5,8 +5,8 @@
+ # Contributor: Jakub Jirutka <jakub@jirutka.cz>
+ # Contributor: Duncan Bellamy <dunk@denkimushi.com>
+ pkgname=rspamd
+-pkgver=2.7
+-pkgrel=3
++pkgver=2.8
++pkgrel=0
+ pkgdesc="Fast, free and open-source spam filtering system"
+ url="https://rspamd.com/"
+ arch="all"
+@@ -17,17 +17,15 @@ pkggroups="rspamd"
+ makedepends="
+ 	cmake
+ 	curl-dev
+-	file-dev
+-	gd-dev
+ 	glib-dev
+ 	icu-dev
+-	libevent-dev
+ 	libsodium-dev
+ 	openssl-dev
+ 	pcre2-dev
+ 	perl
+ 	ragel
+ 	sqlite-dev
++	zstd-dev
+ 	"
+ checkdepends="luarocks"
+ install="$pkgname.pre-install $pkgname.post-upgrade"
+@@ -42,7 +40,7 @@ subpackages="
+ 	$pkgname-openrc
+ 	$pkgname-dbg
+ 	"
+-source="$pkgname-$pkgver.tar.gz::https://github.com/rspamd/rspamd/archive/$pkgver.tar.gz
++source="$pkgname-$pkgver.zip::https://github.com/rspamd/rspamd/archive/refs/heads/master.zip
+ 	$pkgname.logrotated
+ 	$pkgname.initd
+ 	$pkgname.confd
+@@ -50,6 +48,7 @@ source="$pkgname-$pkgver.tar.gz::https:/
+ 	20-default-configs.patch
+ 	10-control_socket.patch
+ 	"
++builddir="$srcdir"/rspamd-master
+ 
+ case "$CARCH" in
+ 	x86|x86_64)
+@@ -82,6 +81,7 @@ build() {
+ 		-DENABLE_PCRE2=ON \
+ 		-DENABLE_HYPERSCAN="$_hm" \
+ 		-DENABLE_LUAJIT="$_jit" \
++		-DSYSTEM_ZSTD=ON \
+ 		-DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+ 		-DCMAKE_C_FLAGS="$CFLAGS" \
+ 		"$CMAKE_CROSSOPTS" .
+@@ -125,7 +125,6 @@ package() {
+ 	install -dm 755 -o rspamd -g rspamd \
+ 		etc/$pkgname/local.d/maps.d
+ 
+-	rm etc/rspamd/options.inc.orig
+ }
+ 
+ client() {

@@ -2,9 +2,9 @@
 
 #WORKDIR /tmp
 #COPY travis-helpers/build-apk-native.sh travis-helpers/pull-apk-source.sh /usr/local/bin/
-#COPY APKBUILD.patch ./
-#COPY newfiles/* ./newfiles/
-#RUN build-apk-native.sh unmaintained/jemalloc
+#COPY newfiles/* APKBUILD.patch.je? ./
+#RUN [-f APKBUILD.patch.jem ] && mv APKBUILD.patch.jem APKBUILD.patch \
+#&& build-apk-native.sh unmaintained/jemalloc
 
 FROM alpine:edge as rspamd-builder
 

@@ -21,14 +21,15 @@ LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 
 COPY --from=rspamd-builder /tmp/packages/* /tmp/packages/
 
-# hadolint ignore=DL3018
 RUN cp /etc/apk/repositories /etc/apk/repositories.orig \
 && echo '/tmp/packages' >> /etc/apk/repositories \
 && chown -R root:root /tmp/packages
 
+# hadolint ignore=DL3018
 RUN apk add --no-cache --allow-untrusted -u rspamd rspamd-controller rspamd-fuzzy rspamd-proxy drill stunnel \
 && mkdir /run/rspamd && chown rspamd:rspamd /run/rspamd \
-&& mkdir /run/stunnel && chown stunnel:stunnel /run/stunnel
+&& mkdir /run/stunnel && chown stunnel:stunnel /run/stunnel \
+&& mv /etc/apk/repositories.orig /etc/apk/repositories
 
 ENV dqsver master
 ENV pkgver 2.7

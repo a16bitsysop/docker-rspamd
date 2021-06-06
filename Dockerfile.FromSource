@@ -1,80 +1,43 @@
-#FROM alpine:3.12 AS jem-build
-#ENV pkgver 5.2.1
+#FROM alpine:edge as jem-builder
 
-#RUN apk --no-cache add build-base autoconf
 #WORKDIR /tmp
-#RUN wget https://github.com/jemalloc/jemalloc/archive/${pkgver}.tar.gz \
-#&& tar -xzf ${pkgver}.tar.gz \
-#&& cd jemalloc-* \
-#&& autoconf \
-#&& _pgs=16 \
-#&& if [ "$TARGETARCH" = "amd64" ]; then _pgs=12; fi \
-#&& if [ "$TARGETARCH" = "x86" ] ; then _pgs=12; fi \
-#&& if [ "$TARGETARCH" = "ppc64le" ] ; then export CPPFLAGS="-maltivec -mabi=altivec"; fi \
-#&& echo "building with --with-lg-page=${_pgs}" \
-#&& echo "${pkgver}" > VERSION \
-#&& ./configure \
-#	--enable-xmalloc \
-#	--prefix=/usr \
-#	--localstatedir=/var \
-#	--sysconfdir=/etc \
-#	--with-lg-page=${_pgs} \
-#	--with-lg-hugepage=21 \
-#&&	make build_lib && make install_include install_lib
+#COPY travis-helpers/build-apk-native.sh travis-helpers/pull-apk-source.sh /usr/local/bin/
+#COPY APKBUILD.patch ./
+#COPY newfiles/* ./newfiles/
+#RUN build-apk-native.sh unmaintained/jemalloc
+
+FROM alpine:edge as rspamd-builder
+
+#COPY --from=jem-builder /tmp/packages/* /tmp/packages/
+WORKDIR /tmp
+COPY travis-helpers/build-apk-native.sh travis-helpers/pull-apk-source.sh /usr/local/bin/
+#copy newfiles and APKBUILD.patch if it exists
+COPY newfiles/* APKBUILD.patc? ./
+
+RUN build-apk-native.sh community/rspamd
 
 FROM alpine:edge
 LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 
+COPY --from=rspamd-builder /tmp/packages/* /tmp/packages/
+
 ENV dqsver master
-ENV pkgver 2.7
-WORKDIR /tmp
-#COPY --from=jem-build /usr/lib/libjemalloc_pic.a /usr/lib/
-#COPY --from=jem-build /usr/include/jemalloc/jemalloc.h /usr/include/jemalloc/
 
-#RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
-# hadolint ignore=DL3018,DL3003
-RUN apk --no-cache --upgrade add --virtual .build-deps \
-	build-base perl cmake ragel binutils \
-	glib-dev icu-dev openssl-dev pcre2-dev luajit-dev libsodium-dev sqlite-dev \
-	vectorscan-dev \
-&& apk --no-cache --upgrade add --virtual .run-deps glib icu libmagic openssl luajit libsodium pcre2 sqlite-libs drill vectorscan \
-	boost pcre \
-&& addgroup -S rspamd && adduser -S -h /var/lib/rspamd --ingroup rspamd rspamd \
-&& wget -q https://github.com/rspamd/rspamd/archive/${pkgver}.tar.gz \
-&& tar -xzf ${pkgver}.tar.gz -C /tmp/rspamd \
-&& rm ${pkgver}.tar.gz
-
-WORKDIR /tmp/rspamd
-COPY *.patch ./
-RUN patch -p1 -i ./10-control_socket.patch \
-#&& patch -p1 -i ./ev-warning.patch \
-#&& patch -p1 -i ./rspamd-static.patch \
-#&& patch -p1 -i ./errors.patch \
-#&& patch -p1 -i ./rspamd-errors.patch \
-&& echo "Building" \
-&& cmake -B build \
-                -DCMAKE_INSTALL_PREFIX=/usr \
-                -DCONFDIR=/etc/rspamd \
-                -DRUNDIR=/run/rspamd \
-		-DENABLE_PCRE2=ON \
-		-DENABLE_HYPERSCAN=ON \
-		-DSTATIC_AND_SHARED=ON \
-#		-DENABLE_JEMALLOC=ON \
-&& make -C build && make -C build install
-
-WORKDIR /usr/bin
-RUN for x in rspamd rspamc rspamadm; do rm $x; mv $x-$pkgver $x; done \
-&& mv rspamd ../sbin/ \
+# hadolint ignore=DL3018
+RUN cp /etc/apk/repositories /etc/apk/repositories.orig \
+&& echo '/tmp/packages' >> /etc/apk/repositories \
+&& chown -R root:root /tmp/packages \
+&& apk add --no-cache --allow-untrusted -u rspamd rspamd-controller rspamd-fuzzy rspamd-proxy drill stunnel \
+&& mkdir /run/rspamd && chown rspamd:rspamd /run/rspamd \
+&& mkdir /run/stunnel && chown stunnel:stunnel /run/stunnel \
+&& mv /etc/apk/repositories.orig /etc/apk/repositories
 
 WORKDIR /tmp
 # hadolint ignore=DL3059
 RUN wget -q https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
 && mv rspamd-dqs-*/2.x /etc/rspamd/rspamd-dqs \
-&& rm -Rf ./* \
-&& apk del .build-deps \
-#&& rm /usr/lib/libjemalloc_pic.a && rm -Rf /usr/include/jemalloc
-&& mkdir /etc/rspamd/override.d
+&& rm -Rf ./*
 
 WORKDIR /usr/local/bin
 COPY travis-helpers/set-timezone.sh entrypoint.sh update_bazaar.sh update_sa_heinlein.sh update_sa_heinlein_daemon.sh ./
@@ -82,11 +45,10 @@ COPY travis-helpers/set-timezone.sh entrypoint.sh update_bazaar.sh update_sa_hei
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./
 
-WORKDIR /etc/rspamd/local.d/maps.d
-COPY --chown=rspamd:rspamd maps/* ./
-
 WORKDIR /etc/rspamd/local.d/maps.orig
 COPY --chown=rspamd:rspamd maps/* ./
+
+COPY stunnel.conf /etc/stunnel/stunnel.conf
 
 CMD [ "entrypoint.sh" ]
 VOLUME /var/lib/rspamd /etc/rspamd/override.d /etc/rspamd/local.d/maps.d

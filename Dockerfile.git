@@ -21,18 +21,16 @@ LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 
 COPY --from=rspamd-builder /tmp/packages/* /tmp/packages/
 
-RUN cp /etc/apk/repositories /etc/apk/repositories.orig \
-&& echo '/tmp/packages' >> /etc/apk/repositories \
-&& chown -R root:root /tmp/packages
+ENV dqsver master
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache --allow-untrusted -u rspamd rspamd-controller rspamd-fuzzy rspamd-proxy drill stunnel \
+RUN cp /etc/apk/repositories /etc/apk/repositories.orig \
+&& echo '/tmp/packages' >> /etc/apk/repositories \
+&& chown -R root:root /tmp/packages \
+&& apk add --no-cache --allow-untrusted -u rspamd rspamd-controller rspamd-fuzzy rspamd-proxy drill stunnel \
 && mkdir /run/rspamd && chown rspamd:rspamd /run/rspamd \
 && mkdir /run/stunnel && chown stunnel:stunnel /run/stunnel \
 && mv /etc/apk/repositories.orig /etc/apk/repositories
-
-ENV dqsver master
-ENV pkgver 2.7
 
 WORKDIR /tmp
 # hadolint ignore=DL3059
@@ -46,9 +44,6 @@ COPY travis-helpers/set-timezone.sh entrypoint.sh update_bazaar.sh update_sa_hei
 
 WORKDIR /etc/rspamd/local.d
 COPY local.conf ./
-
-WORKDIR /etc/rspamd/local.d/maps.d
-COPY --chown=rspamd:rspamd maps/* ./
 
 WORKDIR /etc/rspamd/local.d/maps.orig
 COPY --chown=rspamd:rspamd maps/* ./

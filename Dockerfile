@@ -4,12 +4,13 @@ LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 ENV dqsver master
 
 WORKDIR /tmp
-# hadolint ignore=DL3018,DL3003
+# hadolint ignore=DL3018
 RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories \
 && apk add --no-cache --upgrade rspamd rspamd-fuzzy rspamd-controller rspamd-proxy drill stunnel \
 && mkdir /run/rspamd && chown rspamd:rspamd /run/rspamd \
-&& mkdir /run/stunnel && chown stunnel:stunnel /run/stunnel \
-&& wget -q https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
+&& mkdir /run/stunnel && chown stunnel:stunnel /run/stunnel
+
+RUN wget -q https://github.com/spamhaus/rspamd-dqs/archive/${dqsver}.tar.gz \
 && tar -xzf ${dqsver}.tar.gz \
 && mv rspamd-dqs-${dqsver}/2.x /etc/rspamd/rspamd-dqs \
 && cd /tmp && rm -Rf ./*

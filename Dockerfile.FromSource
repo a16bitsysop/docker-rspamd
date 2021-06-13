@@ -1,25 +1,32 @@
+ARG JEM
 #FROM alpine:edge as jem-builder
 
 #WORKDIR /tmp
 #COPY travis-helpers/build-apk-native.sh travis-helpers/pull-apk-source.sh /usr/local/bin/
 #COPY newfiles/* APKBUILD.patch.je? ./
-#RUN [-f APKBUILD.patch.jem ] && mv APKBUILD.patch.jem APKBUILD.patch \
-#&& build-apk-native.sh unmaintained/jemalloc
+#RUN if [ -f APKBUILD.patch.jem ]; then  mv APKBUILD.patch.jem APKBUILD.patch; fi \
+#&& mkdir -p /tmp/packages && touch /tmp/packages/.placeholder \
+#&& [ -n ${JEM} ] && build-apk-native.sh unmaintained/jemalloc
 
 FROM alpine:edge as rspamd-builder
 
 #COPY --from=jem-builder /tmp/packages/* /tmp/packages/
 WORKDIR /tmp
-COPY travis-helpers/build-apk-native.sh travis-helpers/pull-apk-source.sh /usr/local/bin/
-#copy newfiles and APKBUILD.patch if it exists
-COPY newfiles/* APKBUILD.patc? ./
+COPY travis-helpers/just-build.sh /usr/local/bin/
+#copy rspamd aport files
+COPY rspamd/* ./
 
-RUN build-apk-native.sh community/rspamd
+#RUN  echo '/tmp/packages' >> /etc/apk/repositories \
+#&& [ -n ${JEM} ] && apk add --allow-untrusted jemalloc-dev \
+#&& touch /tmp/jem \
+
+RUN just-build.sh
 
 FROM alpine:edge
 LABEL maintainer="Duncan Bellamy <dunk@denkimushi.com>"
 
 COPY --from=rspamd-builder /tmp/packages/* /tmp/packages/
+RUN ls -lah /tmp/packages
 
 ENV dqsver master
 

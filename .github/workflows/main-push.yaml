@@ -19,12 +19,12 @@ jobs:
     steps:
       # Checks out a copy of your repository on the ubuntu-latest machine
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
         with:
           submodules: 'true'
       # Runs the Super-Linter action
       - name: Run Super-Linter
-        uses: github/super-linter@v3.15.5
+        uses: github/super-linter@v4.2.2
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

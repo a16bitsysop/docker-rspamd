@@ -18,7 +18,6 @@ pkggroups="rspamd"
 makedepends="
 	cmake
 	curl-dev
-	file-dev
 	glib-dev
 	icu-dev
 	libsodium-dev
@@ -30,7 +29,6 @@ makedepends="
 	sqlite-dev
 	zstd-dev
 	"
-checkdepends="luarocks"
 install="$pkgname.pre-install $pkgname.post-upgrade"
 subpackages="
 	$pkgname-dbg

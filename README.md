@@ -1,3 +1,5 @@
+This repository has now moved to: [https://gitlab.com/container-email/rspamd](https://gitlab.com/container-email/rspamd)
+
 # docker-rspamd
 Dockerfile to run [rspamd](https://rspamd.com/) as a docker container, worker-proxy is used instead of worker-normal as it spawns a new worker if there is a crash while processing.
 
